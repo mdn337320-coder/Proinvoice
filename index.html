@@ -44,7 +44,8 @@
     // ======================== CONFIGURATION ========================
     const API_URL = "https://script.google.com/macros/s/AKfycbwRbZWFnku1MsCY8upgJ1wded0Wr_tc_0aXEVuZC1uNx3wNQ-hjehXy-DCWAqDJEw7xRw/exec";
     
-    let currentUser = null;
+    let currentUser = null;      // stores user info
+    let currentPassword = null;  // store actual password for API calls
     let currentView = "login";
 
     // ======================== API CALL ========================
@@ -52,9 +53,9 @@
         try {
             const payload = new URLSearchParams();
             payload.append("action", action);
-            if (currentUser) {
+            if (currentUser && currentPassword) {
                 payload.append("email", currentUser.email);
-                payload.append("password", "dummy");
+                payload.append("password", currentPassword);  // send real password
             }
             for (let key in extraData) {
                 if (extraData.hasOwnProperty(key)) {
@@ -125,6 +126,7 @@
                 const result = await apiCall("getUserInfo", { email, password });
                 if (result.success) {
                     currentUser = result.user;
+                    currentPassword = password;  // store password for subsequent calls
                     currentView = "dashboard";
                     render();
                 } else {
@@ -159,7 +161,12 @@
                 link.onclick = (e) => {
                     e.preventDefault();
                     const view = link.getAttribute("data-view");
-                    if (view === "logout") { currentUser = null; currentView = "login"; render(); }
+                    if (view === "logout") { 
+                        currentUser = null; 
+                        currentPassword = null;
+                        currentView = "login"; 
+                        render(); 
+                    }
                     else { currentView = view; loadViewContent(); }
                 };
             });
@@ -183,7 +190,7 @@
         }
     }
 
-    // ======================== DASHBOARD (safe fallback) ========================
+    // ======================== DASHBOARD ========================
     async function renderDashboard(container) {
         container.innerHTML = "<div class='card'>Loading dashboard...</div>";
         const stats = await apiCall("getDashboardStats");
@@ -230,7 +237,7 @@
             if (canEdit) document.getElementById("addProductBtn")?.addEventListener("click", () => openProductModal());
             return;
         }
-        let tableHtml = `<div class="card"><table><thead><tr><th>SKU</th><th>Name</th><th>Image</th><th>Stock</th><th>Price</th>${canEdit ? '<th>Actions</th>' : ''}</td></thead><tbody>`;
+        let tableHtml = `<div class="card"><table><thead><tr><th>SKU</th><th>Name</th><th>Image</th><th>Stock</th><th>Price</th>${canEdit ? '<th>Actions</th>' : ''}</tr></thead><tbody>`;
         for (let p of res.products) {
             tableHtml += `<tr>
                 <td>${escapeHtml(p.sku)}</td>
@@ -451,7 +458,7 @@
     async function renderCustomers(container) {
         const res = await apiCall("getCustomers");
         if (!res.success) { container.innerHTML = `<div class="card">Error: ${res.error}</div>`; return; }
-        let html = `<h1>Customers</h1><div class="card"><tr><thead><tr><th>Phone</th><th>Name</th><th>Purchases</th><th>Total Spent</th><th>Last Purchase</th></tr></thead><tbody>`;
+        let html = `<h1>Customers</h1><div class="card"><table><thead><tr><th>Phone</th><th>Name</th><th>Purchases</th><th>Total Spent</th><th>Last Purchase</th></tr></thead><tbody>`;
         for (let c of res.customers) {
             html += `<tr>
                 <td>${escapeHtml(c.phone)}</td>
