@@ -3,121 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>StockPulse | Premium Inventory</title>
+    <title>StockPulse | Premium Inventory System</title>
+    <!-- Google Fonts + Tailwind + Font Awesome + Chart.js + Scanner -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* Custom overrides for better aesthetics */
         body {
-            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
             font-family: 'Inter', sans-serif;
-            min-height: 100vh;
+            background: #f4f6f9;
         }
-        :root {
-            --primary: #4f46e5;
-            --primary-dark: #4338ca;
-            --secondary: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-600: #4b5563;
-            --gray-800: #1f2937;
-            --sidebar-bg: rgba(15, 23, 42, 0.95);
-            --card-bg: rgba(255, 255, 255, 0.92);
-            --border-radius-xl: 1.5rem;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        /* Sidebar active state */
+        .sidebar-item.active {
+            background-color: #4f46e5;
+            color: white;
+            box-shadow: 0 2px 6px rgba(79,70,229,0.3);
         }
-        /* Glassmorphism effect */
-        .glass-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            border-radius: var(--border-radius-xl);
-            box-shadow: var(--shadow-lg);
-            border: 1px solid rgba(255,255,255,0.5);
+        /* Card hover effect */
+        .card-hover {
             transition: transform 0.2s, box-shadow 0.2s;
         }
-        .glass-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-xl);
-        }
-        .sidebar {
-            background: var(--sidebar-bg);
-            backdrop-filter: blur(16px);
-            border-right: 1px solid rgba(255,255,255,0.1);
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--secondary), #059669);
-            border: none;
-            transition: all 0.2s;
-        }
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 10px 15px -3px rgba(16,185,129,0.3);
-        }
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--gray-200);
-            transition: all 0.2s;
-        }
-        .btn-outline:hover {
-            background: rgba(0,0,0,0.05);
-            transform: translateY(-1px);
-        }
-        .stat-card {
-            transition: all 0.2s;
-        }
-        .stat-card:hover {
+        .card-hover:hover {
             transform: translateY(-4px);
+            box-shadow: 0 20px 25px -12px rgba(0,0,0,0.15);
         }
-        .nav-item {
-            transition: all 0.2s;
-            cursor: pointer;
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
         }
-        .nav-item:hover {
-            background: rgba(255,255,255,0.1);
-            transform: translateX(4px);
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 10px;
         }
-        .nav-item.active {
-            background: var(--primary);
-            box-shadow: var(--shadow-md);
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
         }
-        input, select, textarea {
-            transition: all 0.2s;
-            border: 1px solid var(--gray-200);
-            border-radius: 0.75rem;
-            padding: 0.6rem 0.8rem;
-            background: white;
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
+        /* Input focus rings */
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+            ring: 2px solid #4f46e5;
+            border-color: #4f46e5;
         }
+        /* Toast message */
         .toast {
             position: fixed;
             bottom: 2rem;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(30,41,59,0.9);
-            backdrop-filter: blur(12px);
+            background: #1f2937;
             color: white;
             padding: 0.75rem 1.5rem;
-            border-radius: 100px;
+            border-radius: 9999px;
+            font-size: 0.875rem;
             z-index: 9999;
             opacity: 0;
             transition: opacity 0.2s;
             pointer-events: none;
-            font-weight: 500;
+            white-space: nowrap;
         }
-        .toast.show { opacity: 1; }
-        .toast.error { background: rgba(239,68,68,0.9); }
+        .toast.show {
+            opacity: 1;
+        }
+        .toast.error {
+            background: #ef4444;
+        }
+        /* Autocomplete */
+        .autocomplete-items {
+            position: absolute;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 20;
+            width: 100%;
+            margin-top: 0.25rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+        .autocomplete-item {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+        .autocomplete-item:hover {
+            background: #f3f4f6;
+        }
+        /* Modal */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -126,201 +105,227 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 10000;
+            z-index: 1000;
             visibility: hidden;
             opacity: 0;
-            transition: 0.2s;
+            transition: all 0.2s;
         }
         .modal-overlay.active {
             visibility: visible;
             opacity: 1;
         }
-        .modal-content {
+        .modal-container {
             background: white;
             border-radius: 1.5rem;
-            max-width: 90%;
-            width: 550px;
+            width: 90%;
+            max-width: 550px;
             max-height: 85vh;
             overflow-y: auto;
             padding: 1.5rem;
-            box-shadow: var(--shadow-xl);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
         }
-        .scan-bar {
-            background: var(--gray-100);
-            border: 2px dashed var(--gray-300);
-            border-radius: 1rem;
-            padding: 0.75rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .scan-bar:hover {
-            background: #eef2ff;
-            border-color: var(--primary);
-        }
-        .autocomplete-items {
-            position: absolute;
-            background: white;
-            border: 1px solid var(--gray-200);
+        /* Scanner container */
+        .scanner-container {
+            overflow: hidden;
             border-radius: 0.75rem;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 100;
-            width: 100%;
-            margin-top: 2px;
-            box-shadow: var(--shadow-md);
-        }
-        .autocomplete-item {
-            padding: 8px 12px;
-            cursor: pointer;
-        }
-        .autocomplete-item:hover {
-            background: var(--gray-100);
-        }
-        .login-card {
-            background: white;
-            border-radius: 2rem;
-            padding: 2rem;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            box-shadow: var(--shadow-xl);
-        }
-        @media (max-width: 768px) {
-            .sidebar { width: 100%; height: auto; position: static; flex-direction: row; flex-wrap: wrap; padding: 1rem; }
-            .nav-links { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-            .main { max-width: 100%; padding: 1rem; }
-            .invoice-grid { grid-template-columns: 1fr; }
+            background: black;
         }
     </style>
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
-<div id="loginOverlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-    <div class="login-card">
+<!-- LOGIN OVERLAY -->
+<div id="loginOverlay" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl">
         <div class="text-center mb-6">
-            <div class="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <div class="w-16 h-16 bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <i class="fas fa-chart-line text-white text-2xl"></i>
             </div>
-            <h2 class="text-2xl font-bold text-gray-800">Stock<span class="text-blue-600">Pulse</span></h2>
+            <h2 class="text-2xl font-bold text-gray-800">Stock<span class="text-indigo-600">Pulse</span></h2>
             <p class="text-gray-500 text-sm">Enterprise login</p>
         </div>
-        <input type="email" id="loginEmail" placeholder="Email" class="w-full p-3 border rounded-xl mb-3" value="admin@yourstore.com">
-        <input type="password" id="loginPassword" placeholder="Password" class="w-full p-3 border rounded-xl mb-5" value="admin123">
-        <button id="loginBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition">Sign In →</button>
-        <div id="loginError" class="text-red-500 text-sm mt-3"></div>
+        <input type="email" id="loginEmail" placeholder="Email" class="w-full p-3 border border-gray-200 rounded-xl mb-3 focus:ring-2 focus:ring-indigo-500" value="admin@yourstore.com">
+        <input type="password" id="loginPassword" placeholder="Password" class="w-full p-3 border border-gray-200 rounded-xl mb-5 focus:ring-2 focus:ring-indigo-500" value="admin123">
+        <button id="loginBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition shadow-md">Sign In →</button>
+        <div id="loginError" class="text-red-500 text-sm text-center mt-3"></div>
     </div>
 </div>
 
-<!-- MAIN APP -->
-<div id="mainApp" style="display:none;">
-    <div class="flex flex-col md:flex-row min-h-screen">
-        <!-- SIDEBAR -->
-        <aside class="sidebar w-full md:w-72 p-5 flex flex-col md:sticky top-0 h-screen overflow-y-auto">
-            <div class="mb-8">
-                <h2 class="text-2xl font-bold text-white">STOCK<span class="text-blue-400">PULSE</span></h2>
-                <p class="text-gray-400 text-xs">enterprise inventory</p>
+<!-- MAIN APP (hidden until login) -->
+<div id="mainApp" class="flex min-h-screen" style="display: none;">
+    <!-- SIDEBAR - Fixed width, dark theme -->
+    <aside class="w-72 bg-gray-900 shadow-xl flex flex-col fixed h-full overflow-y-auto z-10">
+        <div class="p-6 border-b border-gray-800">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-cubes text-indigo-400 text-2xl"></i>
+                <span class="text-2xl font-bold text-white">Stock<span class="text-indigo-400">Pulse</span></span>
             </div>
-            <nav class="nav-links flex flex-col gap-1">
-                <div data-tab="dashboard" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-200 active"><i class="fas fa-chart-line w-5"></i> Dashboard</div>
-                <div data-tab="inventory" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-200"><i class="fas fa-boxes w-5"></i> Products</div>
-                <div data-tab="invoice" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-200"><i class="fas fa-receipt w-5"></i> New Invoice</div>
-                <div data-tab="history" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-200"><i class="fas fa-history w-5"></i> Invoices</div>
-                <div data-tab="customers" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-200"><i class="fas fa-users w-5"></i> Customers</div>
-                <div data-tab="movements" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-200"><i class="fas fa-exchange-alt w-5"></i> Stock Mov.</div>
-                <div data-tab="workers" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-200"><i class="fas fa-user-friends w-5"></i> Workers</div>
-                <div data-tab="settings" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-200"><i class="fas fa-cog w-5"></i> Settings</div>
-            </nav>
-            <div class="mt-auto pt-8">
-                <div class="flex items-center gap-2 text-gray-300 text-sm mb-3">
-                    <i class="fas fa-shield-alt"></i> Role: <span id="roleBadge" class="font-semibold">Admin</span>
+            <p class="text-gray-400 text-xs mt-1">Enterprise inventory</p>
+        </div>
+        <nav class="flex-1 py-6 px-4 space-y-1">
+            <div data-tab="dashboard" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-800 transition cursor-pointer"><i class="fas fa-tachometer-alt w-5"></i> Dashboard</div>
+            <div data-tab="inventory" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-800 transition cursor-pointer"><i class="fas fa-boxes w-5"></i> Products</div>
+            <div data-tab="invoice" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-800 transition cursor-pointer"><i class="fas fa-file-invoice-dollar w-5"></i> New Invoice</div>
+            <div data-tab="history" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-800 transition cursor-pointer"><i class="fas fa-history w-5"></i> Invoices</div>
+            <div data-tab="customers" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-800 transition cursor-pointer"><i class="fas fa-users w-5"></i> Customers</div>
+            <div data-tab="movements" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-800 transition cursor-pointer"><i class="fas fa-exchange-alt w-5"></i> Stock Mov.</div>
+            <div data-tab="workers" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-800 transition cursor-pointer"><i class="fas fa-user-friends w-5"></i> Workers</div>
+            <div data-tab="settings" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-800 transition cursor-pointer"><i class="fas fa-cog w-5"></i> Settings</div>
+        </nav>
+        <div class="p-6 border-t border-gray-800">
+            <div class="flex items-center gap-2 text-gray-400 text-sm mb-3">
+                <i class="fas fa-shield-alt"></i> Role: <span id="roleBadge" class="font-semibold text-white">Admin</span>
+            </div>
+            <button id="logoutBtn" class="w-full py-2 border border-gray-700 rounded-xl text-gray-300 hover:bg-gray-800 transition">Logout</button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 ml-72 p-6 bg-gray-50 min-h-screen">
+        <!-- Top bar -->
+        <div class="flex justify-between items-center mb-8">
+            <h1 id="pageTitle" class="text-2xl font-bold text-gray-800"><i class="fas fa-chart-line text-indigo-600 mr-2"></i> Dashboard</h1>
+            <div class="flex items-center gap-3">
+                <select id="workerSelect" class="bg-white border border-gray-200 rounded-full px-4 py-2 text-sm shadow-sm focus:ring-2 focus:ring-indigo-500"></select>
+            </div>
+        </div>
+
+        <!-- DASHBOARD -->
+        <div id="dashboardTab" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="statsGrid"></div>
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <h3 class="font-semibold text-gray-700 mb-4"><i class="fas fa-chart-line text-indigo-500 mr-2"></i> Weekly Revenue</h3>
+                <canvas id="revenueChart" height="200"></canvas>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-2xl shadow-sm p-6"><h3 class="font-semibold text-gray-700 mb-3"><i class="fas fa-exclamation-triangle text-amber-500 mr-2"></i> Low Stock Items</h3><div id="lowStockList" class="space-y-2"></div></div>
+                <div class="bg-white rounded-2xl shadow-sm p-6"><h3 class="font-semibold text-gray-700 mb-3"><i class="fas fa-clock text-blue-500 mr-2"></i> Recent Invoices</h3><div id="recentInvoices" class="space-y-2"></div></div>
+            </div>
+        </div>
+
+        <!-- PRODUCTS -->
+        <div id="inventoryTab" class="hidden">
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <div class="flex flex-wrap gap-3 mb-5">
+                    <input type="text" id="searchProduct" placeholder="🔍 Search by name or barcode..." class="flex-1 border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-500">
+                    <button id="addProductBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl transition shadow-sm"><i class="fas fa-plus mr-1"></i> Add Product</button>
+                    <button id="scanInventoryBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-2 rounded-xl transition"><i class="fas fa-camera mr-1"></i> Scan</button>
                 </div>
-                <button id="logoutBtn" class="w-full py-2 rounded-xl border border-gray-600 text-gray-300 hover:bg-white/10 transition">Logout</button>
-            </div>
-        </aside>
-
-        <!-- MAIN CONTENT -->
-        <main class="main flex-1 p-6 md:p-8">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold text-gray-800" id="pageTitle"><i class="fas fa-chart-line text-blue-600 mr-2"></i> Dashboard</h1>
-                <select id="workerSelect" class="bg-white border rounded-full px-4 py-2 text-sm shadow-sm"></select>
-            </div>
-
-            <!-- DASHBOARD -->
-            <div id="dashboardTab" class="tab-content">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" id="statsGrid"></div>
-                <div class="glass-card p-6 mb-8"><h3 class="font-semibold text-lg mb-4"><i class="fas fa-chart-line text-blue-500 mr-2"></i> Weekly Revenue</h3><canvas id="revenueChart" height="200"></canvas></div>
-                <div class="grid md:grid-cols-2 gap-6"><div class="glass-card p-6"><h3 class="font-semibold text-lg mb-3"><i class="fas fa-exclamation-triangle text-amber-500"></i> Low Stock</h3><div id="lowStockList"></div></div><div class="glass-card p-6"><h3 class="font-semibold text-lg mb-3"><i class="fas fa-clock text-blue-500"></i> Recent Invoices</h3><div id="recentInvoices"></div></div></div>
-            </div>
-
-            <!-- PRODUCTS -->
-            <div id="inventoryTab" class="tab-content hidden">
-                <div class="glass-card p-6">
-                    <div class="flex flex-wrap gap-3 mb-5">
-                        <input type="text" id="searchProduct" placeholder="🔍 Search by name or barcode" class="flex-1">
-                        <button id="addProductBtn" class="btn-primary text-white px-5 py-2 rounded-full"><i class="fas fa-plus mr-1"></i> Add</button>
-                        <button id="scanInventoryBtn" class="btn-outline px-5 py-2 rounded-full"><i class="fas fa-camera mr-1"></i> Scan</button>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="border-b border-gray-200"><tr><th class="text-left py-2">Barcode</th><th>Image</th><th>Name</th><th>Stock</th><th>Price</th><th>Actions</th></tr></thead>
-                            <tbody id="productsTbody"></tbody>
-                        </table>
-                    </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50 border-b border-gray-200"><tr><th class="text-left py-3 px-2">Barcode</th><th>Image</th><th>Name</th><th>Stock</th><th>Price</th><th>Actions</th></tr></thead>
+                        <tbody id="productsTbody"></tbody>
+                    </table>
                 </div>
             </div>
+        </div>
 
-            <!-- INVOICE -->
-            <div id="invoiceTab" class="tab-content hidden">
-                <div class="glass-card p-6">
-                    <div class="grid grid-cols-2 gap-4 mb-5">
-                        <div><label class="text-xs text-gray-500">Invoice No.</label><input type="text" id="invoiceNo" readonly class="bg-gray-50"></div>
-                        <div><label class="text-xs text-gray-500">Date</label><input type="date" id="invoiceDate"></div>
-                    </div>
-                    <div class="grid lg:grid-cols-3 gap-6">
-                        <div class="lg:col-span-2">
-                            <div class="glass-card p-4 mb-4"><h4 class="font-semibold mb-2">Bill to</h4><div class="grid grid-cols-2 gap-3"><input type="text" id="custName" placeholder="Customer name"><input type="text" id="custPhone" placeholder="Phone"></div><div id="repeatCustomerBadge" class="text-xs mt-2"></div></div>
-                            <div class="glass-card p-4 mb-4"><h4 class="font-semibold mb-2">Add products</h4>
-                                <div id="scanTrigger" class="scan-bar"><i class="fas fa-camera text-blue-500 text-xl"></i><p class="text-sm">Tap to scan barcode</p></div>
-                                <div id="scannerContainer" class="scanner-container hidden mt-2"></div>
-                                <div id="scannerControl" class="hidden text-right mt-2"><button id="stopScannerBtn" class="bg-red-500 text-white px-3 py-1 rounded-full text-sm">Close scanner</button></div>
-                                <div class="mt-3 relative"><label class="text-sm">Or search product</label><input type="text" id="productSearchInput" placeholder="Type name or barcode..." class="w-full mt-1"><div id="productSuggestions" class="autocomplete-items hidden"></div></div>
+        <!-- INVOICE -->
+        <div id="invoiceTab" class="hidden">
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div><label class="block text-xs text-gray-500 mb-1">Invoice No.</label><input type="text" id="invoiceNo" readonly class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2"></div>
+                    <div><label class="block text-xs text-gray-500 mb-1">Date</label><input type="date" id="invoiceDate" class="w-full border border-gray-200 rounded-xl px-3 py-2"></div>
+                </div>
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <!-- Left column: customer & products -->
+                    <div class="lg:col-span-2 space-y-5">
+                        <div class="border border-gray-100 rounded-xl p-4 bg-gray-50">
+                            <h4 class="font-semibold text-gray-700 mb-3">Bill to</h4>
+                            <div class="grid grid-cols-2 gap-3">
+                                <input type="text" id="custName" placeholder="Customer name" class="border border-gray-200 rounded-lg px-3 py-2">
+                                <input type="text" id="custPhone" placeholder="Phone" class="border border-gray-200 rounded-lg px-3 py-2">
                             </div>
-                            <div class="glass-card p-4"><h4 class="font-semibold mb-2">Items</h4><div class="overflow-x-auto"><table class="w-full"><thead><tr><th>#</th><th>Product</th><th>Qty</th><th>Price</th><th>Total</th><th></th></tr></thead><tbody id="itemsBody"></tbody></table></div></div>
+                            <div id="repeatCustomerBadge" class="text-xs text-indigo-600 mt-2"></div>
                         </div>
-                        <div class="glass-card p-4 sticky top-4 h-fit">
-                            <h4 class="font-semibold mb-3">Order summary</h4>
-                            <div class="space-y-2">
-                                <div class="flex justify-between"><span>Subtotal</span><span id="subtotal">0</span></div>
-                                <div class="flex justify-between items-center"><span>Discount</span><div><select id="discountType" class="w-16 text-sm"><option value="percent">%</option><option value="flat">৳</option></select><input type="number" id="discountValue" value="0" class="w-24 ml-1"></div></div>
-                                <div class="flex justify-between"><span>Discount amount</span><span id="discountAmount">0</span></div>
-                                <div class="flex justify-between"><span>Tax (%)</span><input type="number" id="taxRate" value="0" class="w-20"></div>
-                                <div class="flex justify-between"><span>Tax amount</span><span id="taxAmount">0</span></div>
-                                <div class="flex justify-between font-bold text-lg mt-2 pt-2 border-t"><span>GRAND TOTAL</span><span id="grandTotal">0</span></div>
-                                <div class="flex justify-between"><span>Received</span><input type="number" id="received" value="0" class="w-28"></div>
-                                <div class="flex justify-between"><span>Change due</span><span id="changeDue" class="text-green-600">0</span></div>
-                                <div><label class="text-sm">Payment method</label><select id="paymentMethod" class="w-full"><option>Cash</option><option>Card</option><option>bKash</option><option>Nagad</option></select></div>
-                                <div class="flex gap-3 mt-4"><button id="saveInvoiceBtn" class="btn-primary text-white flex-1 py-2 rounded-full"><i class="fas fa-save"></i> Save</button><button id="resetBtn" class="btn-outline flex-1 py-2 rounded-full">Reset</button></div>
-                                <button id="printInvoiceBtn" class="btn-outline w-full mt-3 py-2 rounded-full"><i class="fas fa-print"></i> Print Invoice</button>
+                        <div class="border border-gray-100 rounded-xl p-4 bg-gray-50">
+                            <h4 class="font-semibold text-gray-700 mb-3">Add Products</h4>
+                            <div id="scanTrigger" class="bg-white border-2 border-dashed border-gray-300 rounded-xl p-3 text-center cursor-pointer hover:border-indigo-400 transition">
+                                <i class="fas fa-camera text-indigo-500 text-xl"></i>
+                                <p class="text-sm text-gray-500">Tap to scan barcode</p>
                             </div>
+                            <div id="scannerContainer" class="scanner-container mt-3 hidden"></div>
+                            <div id="scannerControl" class="hidden text-right mt-2"><button id="stopScannerBtn" class="bg-red-500 text-white text-xs px-3 py-1 rounded-full">Close Scanner</button></div>
+                            <div class="mt-4 relative">
+                                <label class="text-sm text-gray-600">Or search product</label>
+                                <input type="text" id="productSearchInput" placeholder="Type name or barcode..." class="w-full border border-gray-200 rounded-lg px-3 py-2 mt-1">
+                                <div id="productSuggestions" class="autocomplete-items hidden"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-700 mb-3">Cart</h4>
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead class="bg-gray-100"><tr><th class="p-2">#</th><th>Product</th><th>Qty</th><th>Price</th><th>Total</th><th></th></tr></thead>
+                                    <tbody id="itemsBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right column: order summary -->
+                    <div class="bg-gray-50 rounded-xl p-5 h-fit sticky top-6">
+                        <h4 class="font-bold text-gray-800 mb-4">Order Summary</h4>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-gray-600"><span>Subtotal</span><span id="subtotal">0</span></div>
+                            <div class="flex justify-between items-center"><span>Discount</span><div><select id="discountType" class="w-16 text-sm border rounded"><option value="percent">%</option><option value="flat">৳</option></select><input type="number" id="discountValue" value="0" class="w-24 ml-1 border rounded px-2 py-1"></div></div>
+                            <div class="flex justify-between text-gray-600"><span>Discount amount</span><span id="discountAmount">0</span></div>
+                            <div class="flex justify-between items-center"><span>Tax (%)</span><input type="number" id="taxRate" value="0" class="w-20 border rounded px-2 py-1"></div>
+                            <div class="flex justify-between text-gray-600"><span>Tax amount</span><span id="taxAmount">0</span></div>
+                            <div class="flex justify-between font-bold text-lg pt-2 border-t"><span>GRAND TOTAL</span><span id="grandTotal">0</span></div>
+                            <div class="flex justify-between"><span>Received</span><input type="number" id="received" value="0" class="w-28 border rounded px-2 py-1"></div>
+                            <div class="flex justify-between"><span>Change due</span><span id="changeDue" class="text-green-600">0</span></div>
+                            <div><label class="text-sm">Payment method</label><select id="paymentMethod" class="w-full border rounded-lg px-3 py-2 mt-1"><option>Cash</option><option>Card</option><option>bKash</option><option>Nagad</option></select></div>
+                            <div class="flex gap-3 mt-5"><button id="saveInvoiceBtn" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-xl transition"><i class="fas fa-save mr-1"></i> Save</button><button id="resetBtn" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 rounded-xl transition">Reset</button></div>
+                            <button id="printInvoiceBtn" class="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 py-2 rounded-xl transition mt-2"><i class="fas fa-print mr-1"></i> Print Invoice</button>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- HISTORY, CUSTOMERS, MOVEMENTS, WORKERS, SETTINGS (simplified but styled) -->
-            <div id="historyTab" class="tab-content hidden"><div class="glass-card p-6"><h3 class="font-semibold text-lg mb-4">All Invoices</h3><div class="overflow-x-auto"><table class="w-full"><thead><tr><th>Invoice #</th><th>Date</th><th>Customer</th><th>Total</th><th>Actions</th></tr></thead><tbody id="historyTbody"></tbody></table></div></div></div>
-            <div id="customersTab" class="tab-content hidden"><div class="glass-card p-6"><h3 class="font-semibold text-lg mb-4">Customers</h3><div id="customersList"></div></div></div>
-            <div id="movementsTab" class="tab-content hidden"><div class="glass-card p-6"><h3 class="font-semibold text-lg mb-4">Stock Movements</h3><div class="overflow-x-auto"><table class="w-full"><thead><tr><th>Date</th><th>Product</th><th>Type</th><th>Qty</th><th>User</th></tr></thead><tbody id="movementsTbody"></tbody></table></div></div></div>
-            <div id="workersTab" class="tab-content hidden"><div class="glass-card p-6"><h3 class="font-semibold text-lg mb-4">Workers</h3><div id="workersList"></div><div class="mt-4 flex gap-2"><input type="text" id="newWorkerName" placeholder="Worker name" class="flex-1"><button id="addWorkerBtn" class="btn-primary text-white px-4 py-2 rounded-full">Add</button></div></div></div>
-            <div id="settingsTab" class="tab-content hidden"><div class="glass-card p-6"><h3 class="font-semibold text-lg mb-4">Settings</h3><div id="settingsForm"></div><button id="saveSettingsBtn" class="btn-primary text-white px-5 py-2 rounded-full mt-4">Save Settings</button></div></div>
-        </main>
-    </div>
+        <!-- HISTORY -->
+        <div id="historyTab" class="hidden">
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <h3 class="font-semibold text-gray-700 mb-4">All Invoices</h3>
+                <div class="overflow-x-auto"><table class="w-full"><thead class="bg-gray-50"><tr><th class="p-2 text-left">Invoice #</th><th>Date</th><th>Customer</th><th>Total</th><th>Actions</th></tr></thead><tbody id="historyTbody"></tbody></table></div>
+            </div>
+        </div>
+
+        <!-- CUSTOMERS -->
+        <div id="customersTab" class="hidden"><div class="bg-white rounded-2xl shadow-sm p-6"><h3 class="font-semibold text-gray-700 mb-4">Customers</h3><div id="customersList" class="space-y-2"></div></div></div>
+
+        <!-- STOCK MOVEMENTS -->
+        <div id="movementsTab" class="hidden"><div class="bg-white rounded-2xl shadow-sm p-6"><h3 class="font-semibold text-gray-700 mb-4">Stock Movements</h3><div class="overflow-x-auto"><table class="w-full"><thead class="bg-gray-50"><tr><th>Date</th><th>Product</th><th>Type</th><th>Qty</th><th>User</th></tr></thead><tbody id="movementsTbody"></tbody></table></div></div></div>
+
+        <!-- WORKERS -->
+        <div id="workersTab" class="hidden"><div class="bg-white rounded-2xl shadow-sm p-6"><h3 class="font-semibold text-gray-700 mb-4">Workers</h3><div id="workersList" class="space-y-2"></div><div class="mt-5 flex gap-2"><input type="text" id="newWorkerName" placeholder="Worker name" class="flex-1 border rounded-lg px-3 py-2"><button id="addWorkerBtn" class="bg-indigo-600 text-white px-5 rounded-xl transition">Add</button></div></div></div>
+
+        <!-- SETTINGS -->
+        <div id="settingsTab" class="hidden"><div class="bg-white rounded-2xl shadow-sm p-6"><h3 class="font-semibold text-gray-700 mb-4">Store Settings</h3><div id="settingsForm" class="space-y-3"></div><button id="saveSettingsBtn" class="bg-indigo-600 text-white px-5 py-2 rounded-xl mt-4 transition">Save Settings</button></div></div>
+    </main>
 </div>
 
-<!-- MODALS -->
-<div id="addProductModal" class="modal-overlay"><div class="modal-content"><h2 class="text-xl font-bold mb-4">Add Product</h2><div id="addProductMsg" class="text-red-500 text-sm mb-2"></div><label>Barcode *</label><input type="text" id="newBarcode" class="w-full mb-2"><button id="scanBarcodeBtn" class="btn-outline w-full mb-2 py-2 rounded-full">Scan</button><div id="barcodeScannerContainer" class="scanner-container hidden mb-2"></div><label>Name *</label><input type="text" id="newProductName" class="w-full mb-2"><label>Price *</label><input type="number" id="newRetailPrice" class="w-full mb-2"><label>Stock</label><input type="number" id="newStock" value="0" class="w-full mb-4"><div class="flex gap-3"><button id="saveNewProduct" class="btn-primary flex-1 py-2 rounded-full">Save</button><button id="cancelAddProduct" class="btn-outline flex-1 py-2 rounded-full">Cancel</button></div></div></div>
+<!-- MODAL for Add Product -->
+<div id="addProductModal" class="modal-overlay">
+    <div class="modal-container">
+        <h2 class="text-xl font-bold mb-4">Add New Product</h2>
+        <div id="addProductMsg" class="text-red-500 text-sm mb-2"></div>
+        <label class="block text-sm font-medium">Barcode *</label>
+        <input type="text" id="newBarcode" class="w-full border rounded-lg p-2 mb-2">
+        <button id="scanBarcodeBtn" class="w-full bg-gray-100 hover:bg-gray-200 py-2 rounded-lg mb-2">Scan Barcode</button>
+        <div id="barcodeScannerContainer" class="scanner-container hidden mb-2"></div>
+        <label class="block text-sm font-medium">Product Name *</label>
+        <input type="text" id="newProductName" class="w-full border rounded-lg p-2 mb-2">
+        <label class="block text-sm font-medium">Price *</label>
+        <input type="number" id="newRetailPrice" class="w-full border rounded-lg p-2 mb-2">
+        <label class="block text-sm font-medium">Initial Stock</label>
+        <input type="number" id="newStock" value="0" class="w-full border rounded-lg p-2 mb-4">
+        <div class="flex gap-3">
+            <button id="saveNewProduct" class="flex-1 bg-indigo-600 text-white py-2 rounded-xl">Save</button>
+            <button id="cancelAddProduct" class="flex-1 bg-gray-200 py-2 rounded-xl">Cancel</button>
+        </div>
+    </div>
+</div>
 
 <div id="toast" class="toast"></div>
 
@@ -333,6 +338,7 @@
     let products = [], currentItems = [], settings = { currency: "৳", taxRate: 0, nextInvoiceNum: 1001 };
     let scanner = null, addProductScanner = null, inventoryScanner = null, salesChart = null;
 
+    // ========== API HELPER ==========
     async function apiCall(action, extra = {}) {
         const payload = new URLSearchParams();
         payload.append("action", action);
@@ -357,34 +363,15 @@
                 currentUser = res.user;
                 currentPassword = password;
                 document.getElementById('loginOverlay').style.display = 'none';
-                document.getElementById('mainApp').style.display = 'block';
+                document.getElementById('mainApp').style.display = 'flex';
                 document.getElementById('roleBadge').innerText = currentUser.role.toUpperCase();
                 if (currentUser.role !== 'admin') document.querySelectorAll('[data-tab="workers"]').forEach(el => el.style.display = 'none');
-                await loadDashboard(); 
-                await loadProducts(); 
-                await loadHistory(); 
-                await loadCustomers(); 
-                await loadMovements(); 
-                await loadWorkers(); 
-                await loadWorkersSelect(); 
-                await loadSettings(); 
-                await loadInvoiceData();
-                document.querySelector('.nav-item[data-tab="dashboard"]').click();
-            } else {
-                document.getElementById('loginError').innerText = "Invalid credentials";
-            }
-        } catch(err) {
-            document.getElementById('loginError').innerText = err.message;
-        }
+                await loadDashboard(); await loadProducts(); await loadHistory(); await loadCustomers(); await loadMovements(); await loadWorkers(); await loadWorkersSelect(); await loadSettings(); await loadInvoiceData();
+                document.querySelector('.sidebar-item[data-tab="dashboard"]').click();
+            } else document.getElementById('loginError').innerText = "Invalid credentials";
+        } catch(err) { document.getElementById('loginError').innerText = err.message; }
     }
-
-    function logout() {
-        currentUser = null;
-        currentPassword = null;
-        document.getElementById('mainApp').style.display = 'none';
-        document.getElementById('loginOverlay').style.display = 'flex';
-        if (scanner) stopInvoiceScanner();
-    }
+    function logout() { currentUser = null; currentPassword = null; document.getElementById('mainApp').style.display = 'none'; document.getElementById('loginOverlay').style.display = 'flex'; if (scanner) stopInvoiceScanner(); }
 
     // ========== DASHBOARD ==========
     async function loadDashboard() {
@@ -393,12 +380,12 @@
             const low = await apiCall("getLowStock");
             const inv = await apiCall("getInvoices");
             document.getElementById('statsGrid').innerHTML = `
-                <div class="glass-card p-5 text-center stat-card"><div class="text-3xl font-bold text-blue-600">${stats.total_products||0}</div><div class="text-gray-500 text-sm">Products</div></div>
-                <div class="glass-card p-5 text-center stat-card"><div class="text-3xl font-bold text-red-600">${stats.low_stock_count||0}</div><div class="text-gray-500 text-sm">Low Stock</div></div>
-                <div class="glass-card p-5 text-center stat-card"><div class="text-3xl font-bold text-green-600">${formatCurrency(stats.today_sales||0)}</div><div class="text-gray-500 text-sm">Today Revenue</div></div>
-                <div class="glass-card p-5 text-center stat-card"><div class="text-3xl font-bold text-purple-600">${(inv.invoices||[]).length}</div><div class="text-gray-500 text-sm">Invoices</div></div>`;
-            document.getElementById('lowStockList').innerHTML = (low.low_stock||[]).map(p => `<div class="flex justify-between py-2 border-b"><span>${p.name}</span><span class="text-red-500 font-semibold">${p.stock}/${p.min}</span></div>`).join('') || '<div class="text-gray-400">✅ All good</div>';
-            document.getElementById('recentInvoices').innerHTML = (inv.invoices||[]).slice(0,5).map(i => `<div class="flex justify-between py-2 border-b"><span>${i.invoice_id}</span><span>${i.customer_name}</span><span>${formatCurrency(i.total)}</span></div>`).join('');
+                <div class="bg-white rounded-xl p-5 shadow-sm"><div class="text-3xl font-bold text-indigo-600">${stats.total_products||0}</div><div class="text-gray-500 text-sm">Products</div></div>
+                <div class="bg-white rounded-xl p-5 shadow-sm"><div class="text-3xl font-bold text-red-500">${stats.low_stock_count||0}</div><div class="text-gray-500 text-sm">Low Stock</div></div>
+                <div class="bg-white rounded-xl p-5 shadow-sm"><div class="text-3xl font-bold text-green-600">${formatCurrency(stats.today_sales||0)}</div><div class="text-gray-500 text-sm">Today Revenue</div></div>
+                <div class="bg-white rounded-xl p-5 shadow-sm"><div class="text-3xl font-bold text-purple-600">${(inv.invoices||[]).length}</div><div class="text-gray-500 text-sm">Invoices</div></div>`;
+            document.getElementById('lowStockList').innerHTML = (low.low_stock||[]).map(p => `<div class="flex justify-between p-2 bg-gray-50 rounded"><span>${p.name}</span><span class="text-red-500 font-semibold">${p.stock}/${p.min}</span></div>`).join('') || '<div class="text-gray-400 p-2">✅ All good</div>';
+            document.getElementById('recentInvoices').innerHTML = (inv.invoices||[]).slice(0,5).map(i => `<div class="flex justify-between p-2 bg-gray-50 rounded"><span>${i.invoice_id}</span><span>${i.customer_name}</span><span>${formatCurrency(i.total)}</span></div>`).join('');
             if(salesChart) salesChart.destroy();
             const ctx = document.getElementById('revenueChart').getContext('2d');
             salesChart = new Chart(ctx, { type: 'line', data: { labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], datasets: [{ label: 'Revenue', data: [1200,1900,3000,2500,4200,3800,5100], borderColor: '#4f46e5', tension: 0.2, fill: false }] } });
@@ -413,14 +400,7 @@
             const search = document.getElementById('searchProduct')?.value.toLowerCase() || '';
             const filtered = products.filter(p => p.name.toLowerCase().includes(search) || (p.barcode && p.barcode.toLowerCase().includes(search)));
             document.getElementById('productsTbody').innerHTML = filtered.map(p => `
-                <tr class="border-b">
-                    <td class="py-2">${p.barcode}</td>
-                    <td>${p.image_url ? `<img src="${p.image_url}" width="40" height="40" class="rounded-lg object-cover">` : '-'}</td>
-                    <td class="font-medium">${p.name}</td>
-                    <td class="${p.stock<=p.min_stock?'text-red-600 font-bold':''}">${p.stock}</td>
-                    <td>${formatCurrency(p.selling_price)}</td>
-                    <td><button class="editStockBtn bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm" data-sku="${p.sku}">Edit Stock</button></td>
-                </tr>
+                <tr class="border-b"><td class="py-2">${p.barcode}</td><td>${p.image_url ? `<img src="${p.image_url}" width="40" height="40" class="rounded-lg object-cover">` : '-'}</td><td class="font-medium">${p.name}</td><td class="${p.stock<=p.min_stock?'text-red-600 font-bold':''}">${p.stock}</td><td>${formatCurrency(p.selling_price)}</td><td><button class="editStockBtn bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm" data-sku="${p.sku}">Edit Stock</button></td></tr>
             `).join('');
             document.querySelectorAll('.editStockBtn').forEach(btn => btn.onclick = async () => {
                 const ns = prompt('Enter new stock quantity:');
@@ -428,13 +408,7 @@
                     const currentStock = products.find(p=>p.sku===btn.dataset.sku).stock;
                     const change = parseInt(ns) - currentStock;
                     if (change !== 0) {
-                        try {
-                            await apiCall("updateStock", { sku: btn.dataset.sku, change: change });
-                            toast('Stock updated', 'success');
-                            await loadProducts(); 
-                            await loadDashboard(); 
-                            await loadMovements();
-                        } catch(e) { toast(e.message, 'error'); }
+                        try { await apiCall("updateStock", { sku: btn.dataset.sku, change: change }); toast('Stock updated', 'success'); await loadProducts(); await loadDashboard(); await loadMovements(); } catch(e) { toast(e.message, 'error'); }
                     }
                 }
             });
@@ -464,14 +438,7 @@
         const tbody = document.getElementById('itemsBody');
         if(!currentItems.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-gray-400">No items added</td></tr>'; recalcTotals(); return; }
         tbody.innerHTML = currentItems.map((item,idx) => `
-            <tr>
-                <td>${idx+1}</td>
-                <td><strong>${item.name}</strong><br><small class="text-gray-400">${item.barcode}</small></td>
-                <td><div class="flex items-center gap-1"><button class="qty-dec w-7 h-7 rounded-full bg-gray-100" data-idx="${idx}">-</button><input type="number" class="qty-val w-14 text-center border rounded" data-idx="${idx}" value="${item.qty}" min="1"><button class="qty-inc w-7 h-7 rounded-full bg-gray-100" data-idx="${idx}">+</button></div></td>
-                <td>${formatCurrency(item.price)}</td>
-                <td>${formatCurrency(item.price*item.qty)}</td>
-                <td><button class="remove-item text-red-500" data-idx="${idx}"><i class="fas fa-trash-alt"></i></button></td>
-            </tr>
+            <tr><td class="p-1">${idx+1}</td><td><strong>${item.name}</strong><br><small class="text-gray-400">${item.barcode}</small></td><td><div class="flex items-center gap-1"><button class="qty-dec w-7 h-7 rounded-full bg-gray-100" data-idx="${idx}">-</button><input type="number" class="qty-val w-14 text-center border rounded" data-idx="${idx}" value="${item.qty}" min="1"><button class="qty-inc w-7 h-7 rounded-full bg-gray-100" data-idx="${idx}">+</button></div></td><td>${formatCurrency(item.price)}</td><td>${formatCurrency(item.price*item.qty)}</td><td><button class="remove-item text-red-500" data-idx="${idx}"><i class="fas fa-trash-alt"></i></button></td></tr>
         `).join('');
         document.querySelectorAll('.qty-dec').forEach(btn => btn.onclick = () => { let idx=parseInt(btn.dataset.idx); if(currentItems[idx].qty>1) currentItems[idx].qty--; renderInvoiceItems(); });
         document.querySelectorAll('.qty-inc').forEach(btn => btn.onclick = () => { let idx=parseInt(btn.dataset.idx); currentItems[idx].qty++; renderInvoiceItems(); });
@@ -529,14 +496,10 @@
         } catch(e) { toast(e.message,'error'); }
     }
     function resetInvoiceForm() {
-        currentItems = [];
-        renderInvoiceItems();
-        document.getElementById('custName').value = '';
-        document.getElementById('custPhone').value = '';
-        document.getElementById('received').value = '0';
-        document.getElementById('discountValue').value = '0';
-        document.getElementById('repeatCustomerBadge').innerHTML = '';
-        document.getElementById('productSearchInput').value = '';
+        currentItems = []; renderInvoiceItems();
+        document.getElementById('custName').value = ''; document.getElementById('custPhone').value = '';
+        document.getElementById('received').value = '0'; document.getElementById('discountValue').value = '0';
+        document.getElementById('repeatCustomerBadge').innerHTML = ''; document.getElementById('productSearchInput').value = '';
         recalcTotals();
     }
     async function loadInvoiceData() {
@@ -552,7 +515,7 @@
     function printInvoice() {
         if(!currentItems.length) { toast('No items to print','error'); return; }
         const win = window.open('', '_blank');
-        win.document.write(`<!DOCTYPE html><html><head><title>Print Invoice</title><style>body{font-family:Inter,sans-serif;margin:0;padding:1.5rem;background:white;}.invoice{max-width:800px;margin:0 auto;background:white;border-radius:1rem;box-shadow:0 10px 25px -5px rgba(0,0,0,0.1);overflow:hidden;}.header{background:linear-gradient(135deg,#4f46e5,#4338ca);color:white;padding:1.5rem;text-align:center;}.details{padding:1.5rem;background:#f9fafb;display:flex;justify-content:space-between;}.customer{padding:1.5rem;border-bottom:1px solid #e5e7eb;}table{width:100%;border-collapse:collapse;margin:1.5rem 0;}th,td{padding:0.75rem;text-align:left;border-bottom:1px solid #e5e7eb;}th{background:#f3f4f6;}.totals{padding:1rem 1.5rem;background:#f9fafb;text-align:right;}.footer{text-align:center;padding:1rem;font-size:0.8rem;color:#6b7280;}</style></head><body><div class="invoice"><div class="header"><h1>${settings.storeName||'StockPulse'}</h1><p>Invoice</p></div><div class="details"><div><strong>Invoice No:</strong> ${document.getElementById('invoiceNo').value}</div><div><strong>Date:</strong> ${document.getElementById('invoiceDate').value}</div></div><div class="customer"><div><strong>Customer:</strong> ${document.getElementById('custName').value || 'Walk-in'}</div><div><strong>Phone:</strong> ${document.getElementById('custPhone').value || '-'}</div></div><table><thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead><tbody>${currentItems.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>${formatCurrency(i.price)}</td><td>${formatCurrency(i.price*i.qty)}</td></tr>`).join('')}</tbody></table><div class="totals"><p>Subtotal: ${document.getElementById('subtotal').innerText}</p><p>Discount: ${document.getElementById('discountAmount').innerText}</p><p>Tax: ${document.getElementById('taxAmount').innerText}</p><h3>Grand Total: ${document.getElementById('grandTotal').innerText}</h3><p>Paid: ${formatCurrency(document.getElementById('received').value)} | Change: ${document.getElementById('changeDue').innerText}</p></div><div class="footer">${settings.thankYouMsg || 'Thank you for your business!'}</div></div></body></html>`);
+        win.document.write(`<!DOCTYPE html><html><head><title>Print Invoice</title><style>body{font-family:Inter,sans-serif;margin:0;padding:1.5rem;background:white;}.invoice{max-width:800px;margin:0 auto;background:white;border-radius:1rem;box-shadow:0 10px 25px -5px rgba(0,0,0,0.1);overflow:hidden;}.header{background:linear-gradient(135deg,#4f46e5,#4338ca);color:white;padding:1.5rem;text-align:center;}.details{padding:1.5rem;background:#f9fafb;display:flex;justify-content:space-between;}.customer{padding:1.5rem;border-bottom:1px solid #e5e7eb;}table{width:100%;border-collapse:collapse;margin:1.5rem 0;}th,td{padding:0.75rem;text-align:left;border-bottom:1px solid #e5e7eb;}th{background:#f3f4f6;}.totals{padding:1rem 1.5rem;background:#f9fafb;text-align:right;}.footer{text-align:center;padding:1rem;font-size:0.8rem;color:#6b7280;}</style></head><body><div class="invoice"><div class="header"><h1>${settings.storeName||'StockPulse'}</h1><p>Invoice</p></div><div class="details"><div><strong>Invoice No:</strong> ${document.getElementById('invoiceNo').value}</div><div><strong>Date:</strong> ${document.getElementById('invoiceDate').value}</div></div><div class="customer"><div><strong>Customer:</strong> ${document.getElementById('custName').value || 'Walk-in'}</div><div><strong>Phone:</strong> ${document.getElementById('custPhone').value || '-'}</div></div><tr><thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead><tbody>${currentItems.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>${formatCurrency(i.price)}</td><td>${formatCurrency(i.price*i.qty)}</td></tr>`).join('')}</tbody></table><div class="totals"><p>Subtotal: ${document.getElementById('subtotal').innerText}</p><p>Discount: ${document.getElementById('discountAmount').innerText}</p><p>Tax: ${document.getElementById('taxAmount').innerText}</p><h3>Grand Total: ${document.getElementById('grandTotal').innerText}</h3><p>Paid: ${formatCurrency(document.getElementById('received').value)} | Change: ${document.getElementById('changeDue').innerText}</p></div><div class="footer">${settings.thankYouMsg || 'Thank you for your business!'}</div></div></body></html>`);
         win.document.close();
         win.print();
     }
@@ -566,26 +529,26 @@
     async function stopInventoryScanner() { if(inventoryScanner) { try{ await inventoryScanner.stop(); await inventoryScanner.clear(); }catch(e){} inventoryScanner=null; } }
 
     // ========== OTHER MODULES ==========
-    async function loadHistory() { const inv = await apiCall("getInvoices"); document.getElementById('historyTbody').innerHTML = (inv.invoices||[]).map(i => `<tr><td>${i.invoice_id}</td><td>${new Date(i.date).toLocaleDateString()}</td><td>${i.customer_name}</td><td>${formatCurrency(i.total)}</td><td><button class="printHistoryBtn bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs" data-id="${i.invoice_id}">Print</button></td></tr>`).join(''); document.querySelectorAll('.printHistoryBtn').forEach(btn => btn.onclick = () => toast('Print feature ready', 'success')); }
-    async function loadCustomers() { const c = await apiCall("getCustomers"); document.getElementById('customersList').innerHTML = (c.customers||[]).map(cu => `<div class="border-b py-3 flex justify-between"><div><strong>${cu.name}</strong><br><span class="text-xs text-gray-500">${cu.phone}</span></div><div>${cu.total_purchases} invoices · ${formatCurrency(cu.total_spent)}</div></div>`).join(''); }
-    async function loadMovements() { const m = await apiCall("getStockMovements"); document.getElementById('movementsTbody').innerHTML = (m.movements||[]).map(mv => `<tr><td>${new Date(mv.timestamp).toLocaleString()}</td><td>${mv.product_id}</td><td><span class="px-2 py-0.5 rounded-full text-xs ${mv.type==='IN'?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${mv.type}</span></td><td>${mv.qty}</td><td>${mv.user||'-'}</td></tr>`).join(''); }
-    async function loadWorkers() { const w = await apiCall("getWorkers"); document.getElementById('workersList').innerHTML = (w.workers||[]).map(wk => `<div class="border-b py-2">${wk}</div>`).join(''); }
+    async function loadHistory() { const inv = await apiCall("getInvoices"); document.getElementById('historyTbody').innerHTML = (inv.invoices||[]).map(i => `<tr><td class="p-2">${i.invoice_id}</td><td>${new Date(i.date).toLocaleDateString()}</td><td>${i.customer_name}</td><td>${formatCurrency(i.total)}</td><td><button class="printHistoryBtn bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs" data-id="${i.invoice_id}">Print</button></td></tr>`).join(''); document.querySelectorAll('.printHistoryBtn').forEach(btn => btn.onclick = () => toast('Print feature ready', 'success')); }
+    async function loadCustomers() { const c = await apiCall("getCustomers"); document.getElementById('customersList').innerHTML = (c.customers||[]).map(cu => `<div class="flex justify-between p-3 bg-gray-50 rounded"><div><strong>${cu.name}</strong><br><span class="text-xs text-gray-500">${cu.phone}</span></div><div>${cu.total_purchases} invoices · ${formatCurrency(cu.total_spent)}</div></div>`).join(''); }
+    async function loadMovements() { const m = await apiCall("getStockMovements"); document.getElementById('movementsTbody').innerHTML = (m.movements||[]).map(mv => `<tr><td class="p-2">${new Date(mv.timestamp).toLocaleString()}</td><td>${mv.product_id}</td><td><span class="px-2 py-0.5 rounded-full text-xs ${mv.type==='IN'?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${mv.type}</span></td><td>${mv.qty}</td><td>${mv.user||'-'}</td></tr>`).join(''); }
+    async function loadWorkers() { const w = await apiCall("getWorkers"); document.getElementById('workersList').innerHTML = (w.workers||[]).map(wk => `<div class="p-2 border-b">${wk}</div>`).join(''); }
     async function addWorker() { const name = document.getElementById('newWorkerName').value.trim(); if(!name) return; await apiCall("addWorker", { workerName: name }); toast('Worker added'); await loadWorkers(); await loadWorkersSelect(); document.getElementById('newWorkerName').value = ''; }
     async function loadWorkersSelect() { const w = await apiCall("getWorkers"); const sel = document.getElementById('workerSelect'); sel.innerHTML = (w.workers||[]).map(wk => `<option>${wk}</option>`).join(''); }
-    async function loadSettings() { const s = await apiCall("getSettings"); settings = s.settings || {}; document.getElementById('settingsForm').innerHTML = `<div class="mb-3"><label class="block text-sm font-medium">Store Name</label><input id="storeName" value="${settings.shop_name||''}" class="w-full"></div><div class="mb-3"><label class="block text-sm font-medium">Currency</label><input id="currency" value="${settings.currency||'USD'}" class="w-full"></div><div class="mb-3"><label class="block text-sm font-medium">Tax (%)</label><input id="taxRateSetting" value="${settings.tax_rate||0}" class="w-full"></div><div class="mb-3"><label class="block text-sm font-medium">Next Invoice #</label><input id="nextInvoiceNum" value="${settings.next_invoice_number||1001}" class="w-full"></div>`; }
+    async function loadSettings() { const s = await apiCall("getSettings"); settings = s.settings || {}; document.getElementById('settingsForm').innerHTML = `<div><label class="block text-sm font-medium">Store Name</label><input id="storeName" value="${settings.shop_name||''}" class="w-full border rounded-lg p-2"></div><div><label class="block text-sm font-medium">Currency</label><input id="currency" value="${settings.currency||'USD'}" class="w-full border rounded-lg p-2"></div><div><label class="block text-sm font-medium">Tax (%)</label><input id="taxRateSetting" value="${settings.tax_rate||0}" class="w-full border rounded-lg p-2"></div><div><label class="block text-sm font-medium">Next Invoice #</label><input id="nextInvoiceNum" value="${settings.next_invoice_number||1001}" class="w-full border rounded-lg p-2"></div>`; }
     async function saveSettings() { const updates = { shop_name: document.getElementById('storeName').value, currency: document.getElementById('currency').value, tax_rate: parseFloat(document.getElementById('taxRateSetting').value), next_invoice_number: parseInt(document.getElementById('nextInvoiceNum').value) }; await apiCall("updateSettings", { settings: updates }); toast('Settings saved'); await loadSettings(); await loadInvoiceData(); }
     async function saveNewProduct() { let barcode = document.getElementById('newBarcode').value.trim(); let name = document.getElementById('newProductName').value.trim(); let price = parseFloat(document.getElementById('newRetailPrice').value); if(!barcode || !name || isNaN(price)) { document.getElementById('addProductMsg').innerText = 'Barcode, Name, and Price are required'; return; } let prodData = { sku: barcode, name, barcode, image_url: '', selling_price: price, stock: parseInt(document.getElementById('newStock').value)||0 }; try { await apiCall("addProduct", prodData); toast('Product added'); document.getElementById('addProductModal').classList.remove('active'); await loadProducts(); await loadDashboard(); } catch(e) { document.getElementById('addProductMsg').innerText = e.message; } }
 
     // ========== EVENT BINDINGS ==========
     document.getElementById('loginBtn').onclick = () => login(document.getElementById('loginEmail').value.trim(), document.getElementById('loginPassword').value);
     document.getElementById('logoutBtn').onclick = logout;
-    document.querySelectorAll('[data-tab]').forEach(btn => btn.onclick = async () => {
-        let tab = btn.dataset.tab;
+    document.querySelectorAll('.sidebar-item').forEach(item => item.onclick = async () => {
+        let tab = item.dataset.tab;
         document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
         document.getElementById(tab+'Tab').classList.remove('hidden');
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('pageTitle').innerHTML = `<i class="fas ${btn.querySelector('i').className.split(' ')[1]} text-blue-600 mr-2"></i> ${btn.innerText.trim()}`;
+        document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        document.getElementById('pageTitle').innerHTML = `<i class="fas ${item.querySelector('i').className.split(' ')[1]} text-indigo-600 mr-2"></i> ${item.innerText.trim()}`;
         if(tab==='dashboard') await loadDashboard();
         if(tab==='inventory') await loadProducts();
         if(tab==='history') await loadHistory();
