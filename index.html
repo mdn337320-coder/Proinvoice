@@ -2,63 +2,50 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>ULTRA Inventory | Sales Management Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>StockPulse | Premium Inventory</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #f1f5f9; font-family: 'Inter', system-ui, sans-serif; }
+        body { background: #f1f5f9; font-family: 'Inter', sans-serif; }
         :root {
             --primary: #4f46e5; --primary-dark: #4338ca; --secondary: #10b981; --danger: #ef4444;
             --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb; --gray-600: #4b5563; --gray-800: #1f2937;
             --sidebar: #0f172a; --radius-xl: 1.5rem; --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
         }
         .app { display: flex; min-height: 100vh; }
-        .sidebar { width: 280px; background: var(--sidebar); padding: 2rem 1.25rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; border-right: 1px solid rgba(255,255,255,0.1); }
+        .sidebar { width: 280px; background: var(--sidebar); padding: 2rem 1.25rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
         .logo-area h2 { font-size: 1.75rem; font-weight: 700; background: linear-gradient(135deg, #fff, #a5b4fc); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .logo-area p { font-size: 0.7rem; color: #9ca3af; margin-top: 0.25rem; }
-        .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 0.75rem; color: #cbd5e1; transition: all 0.2s; font-weight: 500; cursor: pointer; }
-        .nav-item i { width: 1.5rem; }
-        .nav-item:hover { background: rgba(255,255,255,0.1); color: white; transform: translateX(4px); }
+        .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 0.75rem; color: #cbd5e1; transition: all 0.2s; cursor: pointer; }
+        .nav-item:hover { background: rgba(255,255,255,0.1); color: white; }
         .nav-item.active { background: var(--primary); color: white; }
         .main { flex: 1; padding: 2rem 2.5rem; max-width: calc(100% - 280px); }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
-        .page-title { font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, var(--gray-800), var(--primary-dark)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .worker-select { background: white; border: 1px solid var(--gray-200); border-radius: 2rem; padding: 0.5rem 1rem; font-size: 0.875rem; cursor: pointer; }
-        .card { background: white; border-radius: var(--radius-xl); padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-md); transition: all 0.2s; }
-        .card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px -5px rgba(0,0,0,0.15); }
-        .card-title { font-weight: 600; margin-bottom: 1.25rem; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem; border-left: 3px solid var(--primary); padding-left: 0.75rem; }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
         .stat-card { background: white; border-radius: var(--radius-xl); padding: 1.25rem; box-shadow: var(--shadow-md); text-align: center; }
         .stat-number { font-size: 2rem; font-weight: 700; color: var(--primary-dark); }
-        .btn { padding: 0.5rem 1rem; border-radius: 2rem; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .card { background: white; border-radius: var(--radius-xl); padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-md); }
+        .card-title { font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; border-left: 3px solid var(--primary); padding-left: 0.75rem; }
+        .btn { padding: 0.5rem 1rem; border-radius: 2rem; font-weight: 500; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 0.5rem; }
         .btn-primary { background: linear-gradient(135deg, var(--secondary), #059669); color: white; }
         .btn-outline { background: transparent; border: 1px solid var(--gray-300); color: var(--gray-700); }
-        .btn-danger { background: var(--danger); color: white; }
-        .products-table, .items-table, .workers-table { width: 100%; border-collapse: collapse; }
+        table { width: 100%; border-collapse: collapse; }
         th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--gray-200); }
-        th { background: var(--gray-50); font-weight: 600; }
-        .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(1rem); background: var(--gray-800); color: white; padding: 0.75rem 1.5rem; border-radius: 2rem; font-size: 0.85rem; z-index: 9999; opacity: 0; transition: all 0.2s; pointer-events: none; }
-        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-        .toast.error { background: var(--danger); }
-        .tab-content { display: block; animation: fadeSlideUp 0.3s ease-out; }
+        th { background: var(--gray-50); }
+        .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: var(--gray-800); color: white; padding: 0.75rem 1.5rem; border-radius: 2rem; z-index: 9999; opacity: 0; transition: 0.2s; pointer-events: none; }
+        .toast.show { opacity: 1; }
+        .tab-content { display: block; }
         .tab-content.hidden { display: none; }
-        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         .invoice-grid { display: grid; grid-template-columns: 1fr 360px; gap: 1.5rem; }
-        .summary-card { background: white; border-radius: var(--radius-xl); padding: 1.5rem; position: sticky; top: 2rem; box-shadow: var(--shadow-md); }
-        .summary-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--gray-100); }
-        .summary-total { font-size: 1.25rem; font-weight: 700; color: var(--primary-dark); margin: 0.75rem 0; display: flex; justify-content: space-between; }
-        .scan-bar { background: var(--gray-100); border: 2px dashed var(--gray-200); border-radius: 1.25rem; padding: 0.75rem; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 1rem; }
-        .scan-bar:hover { background: #eef2ff; border-color: var(--primary); }
+        .summary-card { background: white; border-radius: var(--radius-xl); padding: 1.5rem; position: sticky; top: 2rem; }
+        .scan-bar { background: var(--gray-100); border: 2px dashed var(--gray-200); border-radius: 1rem; padding: 0.75rem; text-align: center; cursor: pointer; margin-bottom: 1rem; }
         .scanner-container { margin-bottom: 1rem; border-radius: 1rem; overflow: hidden; background: black; }
-        .autocomplete-items { position: absolute; background: white; border: 1px solid var(--gray-200); border-radius: 0.75rem; max-height: 200px; overflow-y: auto; z-index: 100; width: 100%; margin-top: 2px; }
+        .autocomplete-items { position: absolute; background: white; border: 1px solid var(--gray-200); border-radius: 0.75rem; max-height: 200px; overflow-y: auto; z-index: 100; width: 100%; }
         .autocomplete-item { padding: 8px 12px; cursor: pointer; }
         .autocomplete-item:hover { background: var(--gray-100); }
-        .product-search-container { position: relative; }
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000; visibility: hidden; opacity: 0; transition: all 0.2s; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000; visibility: hidden; opacity: 0; transition: 0.2s; }
         .modal-overlay.active { visibility: visible; opacity: 1; }
         .product-form { background: white; max-width: 90%; width: 550px; max-height: 85vh; overflow-y: auto; border-radius: 1.5rem; padding: 1.5rem; }
         @media (max-width: 900px) {
@@ -87,161 +74,113 @@
         <div style="margin-top: auto; padding-top: 2rem; font-size: 0.75rem; color: #94a3b8;"><i class="fas fa-shield-alt"></i> Role: <span id="roleBadge">Admin</span></div>
     </aside>
     <main class="main">
-        <div class="top-bar"><h1 class="page-title" id="pageTitle"><i class="fas fa-chart-line"></i> Dashboard</h1><select id="workerSelect" class="worker-select"></select></div>
+        <div class="top-bar" style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
+            <h1 class="page-title" id="pageTitle" style="font-size: 1.8rem; font-weight: 700;"><i class="fas fa-chart-line"></i> Dashboard</h1>
+            <select id="workerSelect" class="worker-select" style="background: white; border-radius: 2rem; padding: 0.5rem 1rem;"></select>
+        </div>
 
-        <!-- DASHBOARD TAB -->
+        <!-- Dashboard -->
         <div id="dashboardTab" class="tab-content">
             <div class="stats-grid" id="statsGrid">Loading...</div>
             <div class="card"><div class="card-title"><i class="fas fa-chart-line"></i> Weekly Revenue</div><canvas id="revenueChart" height="200"></canvas></div>
-            <div class="grid md:grid-cols-2 gap-6"><div class="card"><div class="card-title"><i class="fas fa-exclamation-triangle"></i> Low Stock Items</div><div id="lowStockList"></div></div><div class="card"><div class="card-title"><i class="fas fa-clock"></i> Recent Invoices</div><div id="recentInvoices"></div></div></div>
+            <div class="grid md:grid-cols-2 gap-6"><div class="card"><div class="card-title"><i class="fas fa-exclamation-triangle"></i> Low Stock</div><div id="lowStockList"></div></div><div class="card"><div class="card-title"><i class="fas fa-clock"></i> Recent Invoices</div><div id="recentInvoices"></div></div></div>
         </div>
 
-        <!-- PRODUCTS TAB (with barcode scanner) -->
+        <!-- Products -->
         <div id="inventoryTab" class="tab-content hidden">
             <div class="card"><div class="card-title"><i class="fas fa-boxes"></i> Manage Products</div>
-                <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
-                    <input type="text" id="searchProduct" placeholder="🔍 Search by name or barcode" style="flex:1">
-                    <button id="addProductBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
-                    <button id="scanInventoryBtn" class="btn btn-outline"><i class="fas fa-camera"></i> Scan</button>
-                </div>
+                <div style="display:flex; gap:0.5rem; margin-bottom:1rem;"><input type="text" id="searchProduct" placeholder="🔍 Search by name or barcode" style="flex:1; padding:0.5rem;"><button id="addProductBtn" class="btn btn-primary">Add</button><button id="scanInventoryBtn" class="btn btn-outline"><i class="fas fa-camera"></i> Scan</button></div>
                 <div class="overflow-x-auto"><table class="products-table"><thead><tr><th>Barcode</th><th>Image</th><th>Name</th><th>Stock</th><th>Price</th><th>Actions</th></tr></thead><tbody id="productsTbody"></tbody></table></div>
             </div>
         </div>
 
-        <!-- INVOICE TAB (with scanner + autocomplete + print) -->
+        <!-- Invoice -->
         <div id="invoiceTab" class="tab-content hidden">
             <div class="card"><div class="card-title"><i class="fas fa-file-invoice"></i> Create Invoice</div>
-                <div style="display:flex; gap:1rem; margin-bottom:1rem;">
-                    <div style="flex:1;"><label>Invoice No.</label><input type="text" id="invoiceNo" readonly style="background:#f3f4f6;"></div>
-                    <div style="flex:1;"><label>Date</label><input type="date" id="invoiceDate"></div>
-                </div>
+                <div style="display:flex; gap:1rem; margin-bottom:1rem;"><div style="flex:1;"><label>Invoice No.</label><input type="text" id="invoiceNo" readonly style="background:#f3f4f6; padding:0.5rem;"></div><div style="flex:1;"><label>Date</label><input type="date" id="invoiceDate" style="padding:0.5rem;"></div></div>
                 <div class="invoice-grid">
                     <div>
-                        <div class="card" style="margin-bottom:1rem;"><div class="card-title">Bill to</div><div style="display:flex; gap:1rem;"><input type="text" id="custName" placeholder="Customer name" style="flex:1"><input type="text" id="custPhone" placeholder="Phone" style="flex:1"></div><div id="repeatCustomerBadge"></div></div>
+                        <div class="card" style="margin-bottom:1rem;"><div class="card-title">Bill to</div><div style="display:flex; gap:1rem;"><input type="text" id="custName" placeholder="Customer name"><input type="text" id="custPhone" placeholder="Phone"></div><div id="repeatCustomerBadge"></div></div>
                         <div class="card"><div class="card-title">Add products</div>
-                            <div id="scanTrigger" class="scan-bar"><i class="fas fa-camera"></i><p>Tap to scan (barcode)</p></div>
+                            <div id="scanTrigger" class="scan-bar"><i class="fas fa-camera"></i><p>Tap to scan barcode</p></div>
                             <div id="scannerContainer" class="scanner-container" style="display:none;"></div>
-                            <div id="scannerControl" style="display:none; text-align:right;"><button id="stopScannerBtn" class="btn btn-danger" style="padding:0.3rem 1rem;">Close scanner</button></div>
-                            <div class="product-search-container" style="margin: 1rem 0;">
-                                <label>Or search product</label>
-                                <input type="text" id="productSearchInput" placeholder="Type name or barcode..." autocomplete="off" class="form-control" style="width:100%; padding:0.6rem;">
-                                <div id="productSuggestions" class="autocomplete-items hidden"></div>
-                            </div>
+                            <div id="scannerControl" style="display:none; text-align:right;"><button id="stopScannerBtn" class="btn btn-danger" style="background:var(--danger);">Close scanner</button></div>
+                            <div class="product-search-container" style="margin:1rem 0;"><label>Or search product</label><input type="text" id="productSearchInput" placeholder="Type name or barcode..." autocomplete="off"><div id="productSuggestions" class="autocomplete-items hidden"></div></div>
                         </div>
-                        <div class="card"><div class="card-title">Items</div><div class="overflow-x-auto"><table class="items-table"><thead><tr><th>#</th><th>Product</th><th>Qty</th><th>Price</th><th>Total</th><th></th></tr></thead><tbody id="itemsBody"></tbody></td></div></div>
+                        <div class="card"><div class="card-title">Items</div><div class="overflow-x-auto"><table class="items-table"><thead><tr><th>#</th><th>Product</th><th>Qty</th><th>Price</th><th>Total</th><th></th></tr></thead><tbody id="itemsBody"></tbody></table></div></div>
                     </div>
                     <div class="summary-card">
                         <div class="card-title">Order summary</div>
-                        <div class="summary-row"><span>Subtotal</span><span id="subtotal">0</span></div>
-                        <div class="summary-row" style="border-bottom:none;"><span>Discount</span><div style="display:flex; gap:8px;"><select id="discountType" style="width:70px;"><option value="percent">%</option><option value="flat">৳</option></select><input type="number" id="discountValue" value="0" style="width:90px;"></div></div>
-                        <div class="summary-row"><span>Discount amount</span><span id="discountAmount">0</span></div>
-                        <div class="summary-row"><span>Tax (%)</span><input type="number" id="taxRate" value="0" style="width:80px;"></div>
-                        <div class="summary-row"><span>Tax amount</span><span id="taxAmount">0</span></div>
-                        <div class="summary-total"><span>GRAND TOTAL</span><span id="grandTotal">0</span></div>
-                        <div class="summary-row"><span>Received</span><input type="number" id="received" value="0" style="width:100px;"></div>
-                        <div class="summary-row"><span>Change due</span><span id="changeDue">0</span></div>
-                        <div><label>Payment method</label><select id="paymentMethod" class="w-full p-1 border rounded"><option>Cash</option><option>Card</option><option>bKash</option><option>Nagad</option></select></div>
-                        <div class="action-buttons" style="display:flex; gap:0.5rem; margin-top:1rem;"><button id="saveInvoiceBtn" class="btn btn-primary flex-1"><i class="fas fa-save"></i> Save</button><button id="resetBtn" class="btn btn-outline flex-1"><i class="fas fa-undo-alt"></i> Reset</button></div>
+                        <div class="summary-row" style="display:flex; justify-content:space-between;"><span>Subtotal</span><span id="subtotal">0</span></div>
+                        <div style="display:flex; justify-content:space-between;"><span>Discount</span><div><select id="discountType"><option value="percent">%</option><option value="flat">৳</option></select><input type="number" id="discountValue" value="0" style="width:80px;"></div></div>
+                        <div style="display:flex; justify-content:space-between;"><span>Discount amount</span><span id="discountAmount">0</span></div>
+                        <div style="display:flex; justify-content:space-between;"><span>Tax (%)</span><input type="number" id="taxRate" value="0" style="width:80px;"></div>
+                        <div style="display:flex; justify-content:space-between;"><span>Tax amount</span><span id="taxAmount">0</span></div>
+                        <div class="summary-total" style="display:flex; justify-content:space-between; font-weight:700; margin:0.5rem 0;"><span>GRAND TOTAL</span><span id="grandTotal">0</span></div>
+                        <div style="display:flex; justify-content:space-between;"><span>Received</span><input type="number" id="received" value="0" style="width:100px;"></div>
+                        <div style="display:flex; justify-content:space-between;"><span>Change due</span><span id="changeDue">0</span></div>
+                        <div><label>Payment method</label><select id="paymentMethod"><option>Cash</option><option>Card</option><option>bKash</option><option>Nagad</option></select></div>
+                        <div style="display:flex; gap:0.5rem; margin-top:1rem;"><button id="saveInvoiceBtn" class="btn btn-primary flex-1">Save</button><button id="resetBtn" class="btn btn-outline flex-1">Reset</button></div>
                         <button id="printInvoiceBtn" class="btn btn-outline" style="margin-top:1rem; width:100%;"><i class="fas fa-print"></i> Print Invoice</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- INVOICE HISTORY -->
-        <div id="historyTab" class="tab-content hidden"><div class="card"><div class="card-title">All Invoices</div><div class="overflow-x-auto"><table class="products-table"><thead><tr><th>Invoice #</th><th>Date</th><th>Customer</th><th>Total</th><th>Worker</th><th>Actions</th></tr></thead><tbody id="historyTbody"></tbody></table></div></div></div>
-
-        <!-- CUSTOMERS -->
-        <div id="customersTab" class="tab-content hidden"><div class="card"><div class="card-title">Customers</div><div style="display:flex; gap:0.5rem; margin-bottom:1rem;"><input type="text" id="searchCustomer" placeholder="Search by phone or name" style="flex:1"><button id="refreshCustomersBtn" class="btn btn-outline">Refresh</button></div><div id="customersList"></div></div></div>
-
-        <!-- STOCK MOVEMENTS -->
-        <div id="movementsTab" class="tab-content hidden"><div class="card"><div class="card-title">Stock Movements</div><div class="overflow-x-auto"><table class="products-table"><thead><tr><th>Date</th><th>Product</th><th>Type</th><th>Qty</th><th>User</th><th>Reason</th></tr></thead><tbody id="movementsTbody"></tbody></table></div></div></div>
-
-        <!-- WORKERS (admin only) -->
-        <div id="workersTab" class="tab-content hidden">
-            <div class="card"><div class="card-title">Add Worker</div><div style="display:flex; gap:0.5rem;"><input type="text" id="newWorkerName" placeholder="Worker name" style="flex:1"><select id="newWorkerRole"><option>Cashier</option><option>Manager</option><option>Admin</option></select><button id="addWorkerBtn" class="btn btn-primary">Add</button></div></div>
-            <div class="card"><div class="card-title">Workers List</div><div class="overflow-x-auto"><table class="workers-table"><thead><tr><th>Name</th><th>Role</th><th>Invoices</th><th>Total Sales</th><th>Status</th><th>Actions</th></tr></thead><tbody id="workersTbody"></tbody></table></div></div>
-        </div>
-
-        <!-- SETTINGS -->
-        <div id="settingsTab" class="tab-content hidden"><div class="card"><div class="card-title">Store Settings</div><div id="settingsForm"></div><div style="margin-top:1rem; display:flex; gap:0.5rem;"><button id="saveSettingsBtn" class="btn btn-primary">Save</button><button id="testConnectionBtn" class="btn btn-outline">Test Connection</button></div><div id="connectionStatus" style="margin-top:1rem;"></div></div></div>
+        <!-- History, Customers, Movements, Workers, Settings (simplified) -->
+        <div id="historyTab" class="tab-content hidden"><div class="card"><div class="card-title">All Invoices</div><div class="overflow-x-auto"><table><thead><tr><th>Invoice #</th><th>Date</th><th>Customer</th><th>Total</th><th>Actions</th></tr></thead><tbody id="historyTbody"></tbody></table></div></div></div>
+        <div id="customersTab" class="tab-content hidden"><div class="card"><div class="card-title">Customers</div><div id="customersList"></div></div></div>
+        <div id="movementsTab" class="tab-content hidden"><div class="card"><div class="card-title">Stock Movements</div><div class="overflow-x-auto"><table><thead><tr><th>Date</th><th>Product</th><th>Type</th><th>Qty</th><th>User</th><tr></thead><tbody id="movementsTbody"></tbody></table></div></div></div>
+        <div id="workersTab" class="tab-content hidden"><div class="card"><div class="card-title">Workers</div><div id="workersList"></div><div style="margin-top:1rem;"><input type="text" id="newWorkerName" placeholder="Worker name"><button id="addWorkerBtn" class="btn btn-primary">Add</button></div></div></div>
+        <div id="settingsTab" class="tab-content hidden"><div class="card"><div class="card-title">Settings</div><div id="settingsForm"></div><button id="saveSettingsBtn" class="btn btn-primary mt-2">Save</button></div></div>
     </main>
 </div>
-
 <div id="toast" class="toast"></div>
-
-<!-- Add Product Modal -->
-<div id="addProductModal" class="modal-overlay">
-    <div class="product-form">
-        <h2>Add New Product</h2>
-        <div id="addProductMsg" style="color:red;"></div>
-        <label>Barcode *</label><div style="display:flex; gap:0.5rem;"><input type="text" id="newBarcode" placeholder="Scan or type" style="flex:1"><button id="scanBarcodeBtn" class="btn btn-outline">Scan</button></div>
-        <div id="barcodeScannerContainer" class="scanner-container" style="display:none;"></div>
-        <label>Product Name *</label><input type="text" id="newProductName">
-        <label>Category</label><input type="text" id="newCategory">
-        <label>Brand</label><input type="text" id="newBrand">
-        <label>Size</label><input type="text" id="newSize">
-        <label>Description</label><textarea id="newDescription" rows="2"></textarea>
-        <label>Retail Price *</label><input type="number" id="newRetailPrice" step="0.01">
-        <label>Wholesale Price</label><input type="number" id="newWholesalePrice" step="0.01">
-        <label>Initial Stock</label><input type="number" id="newStock" value="0">
-        <label>Min Stock Alert</label><input type="number" id="newMinStock" value="5">
-        <div style="display:flex; gap:1rem; margin-top:1rem;"><button id="saveNewProduct" class="btn btn-primary flex-1">Save</button><button id="cancelAddProduct" class="btn btn-outline flex-1">Cancel</button></div>
-    </div>
-</div>
+<div id="addProductModal" class="modal-overlay"><div class="product-form"><h2>Add Product</h2><div id="addProductMsg"></div><label>Barcode</label><input type="text" id="newBarcode"><button id="scanBarcodeBtn" class="btn btn-outline">Scan</button><div id="barcodeScannerContainer" class="scanner-container" style="display:none;"></div><label>Name</label><input type="text" id="newProductName"><label>Price</label><input type="number" id="newRetailPrice"><label>Stock</label><input type="number" id="newStock" value="0"><div style="margin-top:1rem;"><button id="saveNewProduct" class="btn btn-primary">Save</button><button id="cancelAddProduct" class="btn btn-outline">Cancel</button></div></div></div>
 
 <script>
-    // ==================== CONFIGURATION (already filled) ====================
-    const API_URL = "https://script.google.com/macros/s/AKfycbwRbZWFnku1MsCY8upgJ1wded0Wr_tc_0aXEVuZC1uNx3wNQ-hjehXy-DCWAqDJEw7xRw/exec";
+    // ==================== CONFIGURATION ====================
+    const API_URL = "https://script.google.com/macros/s/AKfycbwRbZWFnku1MsCY8upgJ1wded0Wr_tc_0aXEVuZC1uNx3wNQ-hjehXy-DCWAqDJEw7xRw/exec"; // Your URL
     const IMGBB_API_KEY = "31c5a3faf2dad607b733f9a3a34500bd";
-
-    let currentUser = { email: "admin@yourstore.com", role: "admin", fullName: "Admin" };
+    let currentUser = { email: "admin@yourstore.com", role: "admin" };
     let currentPassword = "admin123";
-    let products = [], currentItems = [], settings = { currency: "৳", taxRate: 0, nextInvoiceNum: 1001, storeName: "StockPulse" };
+    let products = [], currentItems = [], settings = { currency: "৳", taxRate: 0, nextInvoiceNum: 1001 };
     let scanner = null, addProductScanner = null, inventoryScanner = null, salesChart = null;
-
-    // ========== UTILITIES ==========
-    function toast(msg, type = '') { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast show' + (type ? ' ' + type : ''); setTimeout(() => t.className = 'toast', 3000); }
-    function escapeHtml(s) { return String(s).replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
-    function formatCurrency(amt) { return `${settings.currency}${Number(amt).toFixed(2)}`; }
 
     async function apiCall(action, extra = {}) {
         const payload = new URLSearchParams();
         payload.append("action", action);
         payload.append("email", currentUser.email);
         payload.append("password", currentPassword);
-        for (let k in extra) {
-            if (typeof extra[k] === "object") payload.append(k, JSON.stringify(extra[k]));
-            else payload.append(k, extra[k]);
-        }
+        for (let k in extra) if (extra.hasOwnProperty(k)) payload.append(k, typeof extra[k] === "object" ? JSON.stringify(extra[k]) : extra[k]);
         const resp = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: payload });
         const text = await resp.text();
         try { const json = JSON.parse(text); if (!json.success) throw new Error(json.error); return json; } catch(e) { throw new Error(text.substring(0,100)); }
     }
 
-    async function uploadToImgbb(file) { const fd = new FormData(); fd.append('image', file); const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: fd }); const data = await res.json(); if (!data.success) throw new Error(data.error?.message); return data.data.url; }
-    async function takePhoto() { return new Promise((resolve) => { const input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*'; input.capture = 'environment'; input.onchange = async (e) => { if (e.target.files && e.target.files[0]) { try { const url = await uploadToImgbb(e.target.files[0]); resolve(url); } catch(err) { toast("Upload failed", "error"); resolve(null); } } else resolve(null); }; input.click(); }); }
+    function toast(msg, type='') { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast show'+(type?' '+type:''); setTimeout(() => t.className = 'toast', 3000); }
+    function formatCurrency(amt) { return `${settings.currency}${Number(amt).toFixed(2)}`; }
 
-    // ========== DASHBOARD ==========
+    // Dashboard
     async function loadDashboard() {
         try {
             const stats = await apiCall("getDashboardStats");
-            const lowStock = await apiCall("getLowStock");
-            const invoices = await apiCall("getInvoices");
+            const low = await apiCall("getLowStock");
+            const inv = await apiCall("getInvoices");
             document.getElementById('statsGrid').innerHTML = `
-                <div class="stat-card"><div class="stat-number">${stats.total_products || 0}</div><div>Total Products</div></div>
-                <div class="stat-card"><div class="stat-number text-red-600">${stats.low_stock_count || 0}</div><div>Low Stock</div></div>
-                <div class="stat-card"><div class="stat-number">${formatCurrency(stats.today_sales || 0)}</div><div>Today Revenue</div></div>
-                <div class="stat-card"><div class="stat-number">${(invoices.invoices || []).length}</div><div>Total Invoices</div></div>`;
-            document.getElementById('lowStockList').innerHTML = (lowStock.low_stock || []).map(p => `<div>${escapeHtml(p.name)} (${p.stock}/${p.min})</div>`).join('') || '<div>✅ All good</div>';
-            document.getElementById('recentInvoices').innerHTML = (invoices.invoices || []).slice(0,5).map(i => `<div>${i.invoice_id} – ${escapeHtml(i.customer_name)} – ${formatCurrency(i.total)}</div>`).join('');
-            if (salesChart) salesChart.destroy();
+                <div class="stat-card"><div class="stat-number">${stats.total_products||0}</div><div>Products</div></div>
+                <div class="stat-card"><div class="stat-number text-red-600">${stats.low_stock_count||0}</div><div>Low Stock</div></div>
+                <div class="stat-card"><div class="stat-number">${formatCurrency(stats.today_sales||0)}</div><div>Today</div></div>
+                <div class="stat-card"><div class="stat-number">${(inv.invoices||[]).length}</div><div>Invoices</div></div>`;
+            document.getElementById('lowStockList').innerHTML = (low.low_stock||[]).map(p => `<div>${p.name} (${p.stock}/${p.min})</div>`).join('') || '<div>✅ All good</div>';
+            document.getElementById('recentInvoices').innerHTML = (inv.invoices||[]).slice(0,5).map(i => `<div>${i.invoice_id} – ${i.customer_name} – ${formatCurrency(i.total)}</div>`).join('');
+            if(salesChart) salesChart.destroy();
             const ctx = document.getElementById('revenueChart').getContext('2d');
-            salesChart = new Chart(ctx, { type: 'line', data: { labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], datasets: [{ label: 'Revenue', data: [1200,1900,3000,2500,4200,3800,5100], borderColor: '#4f46e5', tension: 0.2 }] } });
-        } catch(e) { toast(e.message, 'error'); }
+            salesChart = new Chart(ctx, { type: 'line', data: { labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], datasets: [{ label: 'Revenue', data: [1200,1900,3000,2500,4200,3800,5100], borderColor: '#4f46e5' }] } });
+        } catch(e) { toast(e.message,'error'); }
     }
 
-    // ========== PRODUCTS ==========
+    // Products
     async function loadProducts() {
         try {
             const res = await apiCall("getProducts");
@@ -249,134 +188,94 @@
             const search = document.getElementById('searchProduct')?.value.toLowerCase() || '';
             const filtered = products.filter(p => p.name.toLowerCase().includes(search) || p.barcode.includes(search));
             document.getElementById('productsTbody').innerHTML = filtered.map(p => `
-                <tr><td>${p.barcode}</td><td>${p.image_url ? `<img src="${p.image_url}" width="40" height="40" style="object-fit:cover; border-radius:8px;">` : '-'}</td><td class="${p.stock <= p.min_stock ? 'text-red-600 font-bold' : ''}">${escapeHtml(p.name)}</td><td>${p.stock}</td><td>${formatCurrency(p.selling_price)}</td><td><button class="editStockBtn btn btn-outline text-xs" data-sku="${p.sku}">Edit Stock</button></td></tr>
-            `).join('');
-            document.querySelectorAll('.editStockBtn').forEach(btn => btn.onclick = async () => { const ns = prompt('New stock quantity:'); if (ns) { await apiCall("updateStock", { sku: btn.dataset.sku, change: parseInt(ns) - products.find(p=>p.sku===btn.dataset.sku).stock }); toast('Stock updated', 'success'); loadProducts(); loadDashboard(); } });
-        } catch(e) { toast(e.message, 'error'); }
+                <tr><td>${p.barcode}侧<td>${p.image_url?`<img src="${p.image_url}" width="40" height="40" style="border-radius:8px;">`:'-'}侧<td class="${p.stock<=p.min_stock?'text-red-600':''}">${p.name}侧<td>${p.stock}侧<td>${formatCurrency(p.selling_price)}侧<td><button class="editStockBtn btn btn-outline text-xs" data-sku="${p.sku}">Edit Stock</button>侧</tr>`).join('');
+            document.querySelectorAll('.editStockBtn').forEach(btn => btn.onclick = async () => { const ns = prompt('New stock:'); if(ns) { await apiCall("updateStock", { sku: btn.dataset.sku, change: parseInt(ns) - products.find(p=>p.sku===btn.dataset.sku).stock }); loadProducts(); loadDashboard(); } });
+        } catch(e) { toast(e.message,'error'); }
     }
 
-    // ========== INVOICE: AUTOCOMPLETE & SCANNER ==========
+    // Invoice helpers (autocomplete, scanner, cart)
     const searchInput = document.getElementById('productSearchInput');
     const suggestionsDiv = document.getElementById('productSuggestions');
-    if (searchInput && suggestionsDiv) {
+    if(searchInput) {
         searchInput.addEventListener('input', () => {
-            const query = searchInput.value.trim().toLowerCase();
-            if (!query) { suggestionsDiv.classList.add('hidden'); suggestionsDiv.innerHTML = ''; return; }
-            const matches = products.filter(p => p.name.toLowerCase().includes(query) || p.barcode.includes(query));
-            if (!matches.length) { suggestionsDiv.classList.add('hidden'); return; }
-            suggestionsDiv.innerHTML = matches.slice(0,8).map(p => `<div class="autocomplete-item" data-barcode="${p.barcode}" data-name="${p.name}" data-price="${p.selling_price}">${escapeHtml(p.name)} (${p.barcode}) - ${formatCurrency(p.selling_price)}</div>`).join('');
+            const q = searchInput.value.trim().toLowerCase();
+            if(!q) { suggestionsDiv.classList.add('hidden'); return; }
+            const matches = products.filter(p => p.name.toLowerCase().includes(q) || p.barcode.includes(q));
+            suggestionsDiv.innerHTML = matches.slice(0,8).map(p => `<div class="autocomplete-item" data-barcode="${p.barcode}" data-name="${p.name}" data-price="${p.selling_price}">${p.name} (${p.barcode}) - ${formatCurrency(p.selling_price)}</div>`).join('');
             suggestionsDiv.classList.remove('hidden');
         });
-        suggestionsDiv.addEventListener('mousedown', (e) => { const item = e.target.closest('.autocomplete-item'); if (!item) return; e.preventDefault(); const { barcode, name, price } = item.dataset; addProductToInvoice(barcode, name, parseFloat(price)); searchInput.value = ''; suggestionsDiv.classList.add('hidden'); });
-        searchInput.addEventListener('blur', () => setTimeout(() => { suggestionsDiv.classList.add('hidden'); }, 200));
+        suggestionsDiv.addEventListener('mousedown', (e) => { const item = e.target.closest('.autocomplete-item'); if(!item) return; e.preventDefault(); const {barcode,name,price} = item.dataset; addProductToInvoice(barcode,name,parseFloat(price)); searchInput.value=''; suggestionsDiv.classList.add('hidden'); });
     }
-
-    function addProductToInvoice(barcode, name, price) {
+    function addProductToInvoice(barcode,name,price) {
         const existing = currentItems.find(i => i.barcode === barcode);
-        if (existing) existing.qty++; else currentItems.push({ barcode, name, price, qty: 1 });
+        if(existing) existing.qty++; else currentItems.push({ barcode, name, price, qty:1 });
         renderInvoiceItems();
-        toast(`Added ${name}`, 'success');
+        toast(`Added ${name}`);
     }
-
-    async function startInvoiceScanner() {
-        if (scanner) await stopInvoiceScanner();
-        const container = document.getElementById('scannerContainer');
-        container.style.display = 'block';
-        container.innerHTML = '<div id="invoice-reader" style="width:100%"></div>';
-        document.getElementById('scannerControl').style.display = 'flex';
-        scanner = new Html5Qrcode('invoice-reader');
-        try {
-            await scanner.start({ facingMode: 'environment' }, { fps: 15, qrbox: { width: 250, height: 250 } },
-                (decoded) => {
-                    const prod = products.find(p => p.barcode === decoded);
-                    if (prod) addProductToInvoice(prod.barcode, prod.name, prod.selling_price);
-                    else toast('Product not found', 'error');
-                }, () => {});
-        } catch(e) { toast('Camera error', 'error'); stopInvoiceScanner(); }
-    }
-    async function stopInvoiceScanner() {
-        if (scanner) { try { await scanner.stop(); await scanner.clear(); } catch(e){} scanner = null; }
-        document.getElementById('scannerContainer').style.display = 'none';
-        document.getElementById('scannerControl').style.display = 'none';
-    }
-
     function renderInvoiceItems() {
         const tbody = document.getElementById('itemsBody');
-        if (!currentItems.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No items added</td></tr>'; recalcTotals(); return; }
-        tbody.innerHTML = currentItems.map((item, idx) => `
-            <tr><td>${idx+1}</td><td><strong>${escapeHtml(item.name)}</strong><br><small>${item.barcode}</small></td>
-            <td><div style="display:flex; gap:5px;"><button class="qty-dec" data-idx="${idx}">-</button><input type="number" class="qty-val" data-idx="${idx}" value="${item.qty}" min="1" style="width:60px;"><button class="qty-inc" data-idx="${idx}">+</button></div></td>
-            <td>${formatCurrency(item.price)}</td><td>${formatCurrency(item.price * item.qty)}</td><td><button class="remove-item" data-idx="${idx}"><i class="fas fa-trash"></i></button></td></tr>
-        `).join('');
-        document.querySelectorAll('.qty-dec').forEach(btn => btn.onclick = () => { let idx = parseInt(btn.dataset.idx); if (currentItems[idx].qty > 1) currentItems[idx].qty--; renderInvoiceItems(); });
-        document.querySelectorAll('.qty-inc').forEach(btn => btn.onclick = () => { let idx = parseInt(btn.dataset.idx); currentItems[idx].qty++; renderInvoiceItems(); });
-        document.querySelectorAll('.qty-val').forEach(inp => inp.onchange = () => { let idx = parseInt(inp.dataset.idx); let v = parseInt(inp.value); if (v>0) currentItems[idx].qty = v; renderInvoiceItems(); });
-        document.querySelectorAll('.remove-item').forEach(btn => btn.onclick = () => { let idx = parseInt(btn.dataset.idx); currentItems.splice(idx,1); renderInvoiceItems(); });
+        if(!currentItems.length) { tbody.innerHTML = '<tr><td colspan="6">No items added</td></tr>'; recalcTotals(); return; }
+        tbody.innerHTML = currentItems.map((item,idx) => `<tr>
+            <td>${idx+1}</td><td><strong>${item.name}</strong><br><small>${item.barcode}</small></td>
+            <td><div style="display:flex;"><button class="qty-dec" data-idx="${idx}">-</button><input type="number" class="qty-val" data-idx="${idx}" value="${item.qty}" min="1" style="width:60px;"><button class="qty-inc" data-idx="${idx}">+</button></div></td>
+            <td>${formatCurrency(item.price)}</td><td>${formatCurrency(item.price*item.qty)}</td>
+            <td><button class="remove-item" data-idx="${idx}"><i class="fas fa-trash"></i></button></td>
+        </tr>`).join('');
+        document.querySelectorAll('.qty-dec').forEach(btn => btn.onclick = () => { let idx=parseInt(btn.dataset.idx); if(currentItems[idx].qty>1) currentItems[idx].qty--; renderInvoiceItems(); });
+        document.querySelectorAll('.qty-inc').forEach(btn => btn.onclick = () => { let idx=parseInt(btn.dataset.idx); currentItems[idx].qty++; renderInvoiceItems(); });
+        document.querySelectorAll('.qty-val').forEach(inp => inp.onchange = () => { let idx=parseInt(inp.dataset.idx); let v=parseInt(inp.value); if(v>0) currentItems[idx].qty=v; renderInvoiceItems(); });
+        document.querySelectorAll('.remove-item').forEach(btn => btn.onclick = () => { let idx=parseInt(btn.dataset.idx); currentItems.splice(idx,1); renderInvoiceItems(); });
         recalcTotals();
     }
-
     function recalcTotals() {
-        let subtotal = currentItems.reduce((s,i) => s + i.price * i.qty, 0);
+        let subtotal = currentItems.reduce((s,i)=>s + i.price*i.qty,0);
         let discType = document.getElementById('discountType').value;
-        let discVal = parseFloat(document.getElementById('discountValue').value) || 0;
-        let discount = discType === 'percent' ? subtotal * discVal / 100 : discVal;
+        let discVal = parseFloat(document.getElementById('discountValue').value)||0;
+        let discount = discType==='percent' ? subtotal*discVal/100 : discVal;
         let afterDisc = subtotal - discount;
-        let taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
-        let tax = afterDisc * taxRate / 100;
+        let taxRate = parseFloat(document.getElementById('taxRate').value)||0;
+        let tax = afterDisc * taxRate/100;
         let total = afterDisc + tax;
         document.getElementById('subtotal').innerText = formatCurrency(subtotal);
         document.getElementById('discountAmount').innerText = formatCurrency(discount);
         document.getElementById('taxAmount').innerText = formatCurrency(tax);
         document.getElementById('grandTotal').innerText = formatCurrency(total);
-        let received = parseFloat(document.getElementById('received').value) || 0;
+        let received = parseFloat(document.getElementById('received').value)||0;
         let change = received - total;
-        document.getElementById('changeDue').innerHTML = formatCurrency(change >= 0 ? change : 0);
-        document.getElementById('changeDue').style.color = change < 0 ? 'red' : '#059669';
+        document.getElementById('changeDue').innerHTML = formatCurrency(change>=0?change:0);
+        document.getElementById('changeDue').style.color = change<0?'red':'#059669';
     }
-
     async function saveInvoice() {
-        if (currentItems.length === 0) { toast('No items', 'error'); return; }
-        for (let item of currentItems) {
-            const prod = products.find(p => p.barcode === item.barcode);
-            if (!prod || prod.stock < item.qty) { toast(`${item.name}: only ${prod?.stock || 0} in stock`, 'error'); return; }
+        if(!currentItems.length) { toast('No items','error'); return; }
+        for(let item of currentItems) {
+            const prod = products.find(p=>p.barcode===item.barcode);
+            if(!prod || prod.stock < item.qty) { toast(`${item.name}: stock ${prod?.stock||0}`, 'error'); return; }
         }
-        let subtotal = currentItems.reduce((s,i) => s + i.price * i.qty, 0);
+        let subtotal = currentItems.reduce((s,i)=>s+i.price*i.qty,0);
         let discType = document.getElementById('discountType').value;
-        let discVal = parseFloat(document.getElementById('discountValue').value) || 0;
-        let discount = discType === 'percent' ? subtotal * discVal / 100 : discVal;
+        let discVal = parseFloat(document.getElementById('discountValue').value)||0;
+        let discount = discType==='percent' ? subtotal*discVal/100 : discVal;
         let afterDisc = subtotal - discount;
-        let taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
-        let tax = afterDisc * taxRate / 100;
+        let taxRate = parseFloat(document.getElementById('taxRate').value)||0;
+        let tax = afterDisc * taxRate/100;
         let total = afterDisc + tax;
-        let paid = parseFloat(document.getElementById('received').value) || 0;
+        let paid = parseFloat(document.getElementById('received').value)||0;
         let due = total - paid;
         const invoiceData = {
-            customer_name: document.getElementById('custName').value.trim() || 'Walk-in',
+            customer_name: document.getElementById('custName').value.trim()||'Walk-in',
             customer_phone: document.getElementById('custPhone').value.trim(),
-            total: total, paid: paid, due: due > 0 ? due : 0,
+            total, paid, due: due>0?due:0,
             payment_method: document.getElementById('paymentMethod').value,
-            items: currentItems.map(i => ({ sku: i.barcode, qty: i.qty, unit_price: i.price }))
+            items: currentItems.map(i=>({ sku:i.barcode, qty:i.qty, unit_price:i.price }))
         };
         try {
             const res = await apiCall("createInvoice", { invoiceData });
-            toast(`Invoice ${res.invoice_no} saved`, 'success');
+            toast(`Invoice ${res.invoice_no} saved`);
             products = (await apiCall("getProducts")).products;
             resetInvoiceForm();
-            loadHistory();
-            loadDashboard();
-            loadProducts();
-            loadCustomers();
-            loadMovements();
-        } catch(e) { toast(e.message, 'error'); }
+            loadHistory(); loadDashboard(); loadProducts(); loadCustomers(); loadMovements();
+        } catch(e) { toast(e.message,'error'); }
     }
-
-    function printInvoice() {
-        if (currentItems.length === 0) { toast('No items to print', 'error'); return; }
-        const win = window.open('', '_blank');
-        win.document.write(`<!DOCTYPE html><html><head><title>Print Invoice</title><style>body{font-family:monospace;padding:0.5in;}</style></head><body onload="window.print();window.close();"><div><h2>${settings.storeName}</h2><p>Invoice: ${document.getElementById('invoiceNo').value}<br>Date: ${document.getElementById('invoiceDate').value}</p><p>Customer: ${document.getElementById('custName').value || 'Walk-in'}<br>Phone: ${document.getElementById('custPhone').value}</p><table border="1"><thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead><tbody>${currentItems.map(i => `<td>${escapeHtml(i.name)}侧侧侧${formatCurrency(i.price * i.qty)}侧`).join('')}</tbody></table><p>Subtotal: ${formatCurrency(document.getElementById('subtotal').innerText)}<br>Discount: ${document.getElementById('discountAmount').innerText}<br>Tax: ${document.getElementById('taxAmount').innerText}<br><strong>Grand Total: ${document.getElementById('grandTotal').innerText}</strong></p><p>Paid: ${formatCurrency(document.getElementById('received').value)} | Change: ${document.getElementById('changeDue').innerText}</p><p>${settings.thankYouMsg || 'Thank you!'}</p></div></body></html>`);
-        win.document.close();
-    }
-
     function resetInvoiceForm() {
         currentItems = [];
         renderInvoiceItems();
@@ -384,47 +283,107 @@
         document.getElementById('custPhone').value = '';
         document.getElementById('received').value = '0';
         document.getElementById('discountValue').value = '0';
-        document.getElementById('discountType').value = 'percent';
         document.getElementById('repeatCustomerBadge').innerHTML = '';
         document.getElementById('productSearchInput').value = '';
         recalcTotals();
     }
-
     async function loadInvoiceData() {
         const setts = await apiCall("getSettings");
-        settings = setts.settings || { currency: '৳', nextInvoiceNum: 1001 };
+        settings = setts.settings || { currency:'৳', nextInvoiceNum:1001 };
         const year = new Date().getFullYear();
-        document.getElementById('invoiceNo').value = `INV-${year}-${String(settings.nextInvoiceNum || 1001).padStart(4,'0')}`;
+        document.getElementById('invoiceNo').value = `INV-${year}-${String(settings.nextInvoiceNum||1001).padStart(4,'0')}`;
         document.getElementById('invoiceDate').value = new Date().toISOString().slice(0,10);
-        document.getElementById('taxRate').value = settings.taxRate || 0;
+        document.getElementById('taxRate').value = settings.tax_rate||0;
+    }
+    // Print with beautiful CSS
+    function printInvoice() {
+        if(!currentItems.length) { toast('No items to print','error'); return; }
+        const win = window.open('', '_blank');
+        win.document.write(`
+            <!DOCTYPE html>
+            <html><head><title>Print Invoice</title>
+            <style>
+                body { font-family: 'Inter', sans-serif; margin: 0; padding: 1.5rem; background: white; }
+                .invoice-container { max-width: 800px; margin: 0 auto; background: white; border-radius: 1rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); overflow: hidden; }
+                .invoice-header { background: linear-gradient(135deg, #4f46e5, #4338ca); color: white; padding: 1.5rem; text-align: center; }
+                .invoice-header h1 { font-size: 2rem; margin: 0; }
+                .invoice-details { padding: 1.5rem; background: #f9fafb; display: flex; justify-content: space-between; border-bottom: 1px solid #e5e7eb; }
+                .customer-details { padding: 1.5rem; border-bottom: 1px solid #e5e7eb; }
+                table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+                th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+                th { background: #f3f4f6; font-weight: 600; }
+                .totals { padding: 1rem 1.5rem; background: #f9fafb; text-align: right; border-top: 2px solid #e5e7eb; }
+                .footer { text-align: center; padding: 1rem; font-size: 0.8rem; color: #6b7280; border-top: 1px solid #e5e7eb; }
+            </style>
+            </head><body>
+            <div class="invoice-container">
+                <div class="invoice-header"><h1>${settings.storeName||'StockPulse'}</h1><p>Invoice</p></div>
+                <div class="invoice-details">
+                    <div><strong>Invoice No:</strong> ${document.getElementById('invoiceNo').value}</div>
+                    <div><strong>Date:</strong> ${document.getElementById('invoiceDate').value}</div>
+                </div>
+                <div class="customer-details">
+                    <div><strong>Customer:</strong> ${document.getElementById('custName').value || 'Walk-in'}</div>
+                    <div><strong>Phone:</strong> ${document.getElementById('custPhone').value || '-'}</div>
+                </div>
+                <table><thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead><tbody>
+                    ${currentItems.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>${formatCurrency(i.price)}</td><td>${formatCurrency(i.price*i.qty)}</td></tr>`).join('')}
+                </tbody></table>
+                <div class="totals">
+                    <p>Subtotal: ${document.getElementById('subtotal').innerText}</p>
+                    <p>Discount: ${document.getElementById('discountAmount').innerText}</p>
+                    <p>Tax: ${document.getElementById('taxAmount').innerText}</p>
+                    <h3>Grand Total: ${document.getElementById('grandTotal').innerText}</h3>
+                    <p>Paid: ${formatCurrency(document.getElementById('received').value)} | Change: ${document.getElementById('changeDue').innerText}</p>
+                </div>
+                <div class="footer">${settings.thankYouMsg || 'Thank you for your business!'}</div>
+            </div>
+            </body></html>
+        `);
+        win.document.close();
+        win.print();
     }
 
-    // ========== OTHER MODULES ==========
-    async function loadHistory() { try { const inv = await apiCall("getInvoices"); document.getElementById('historyTbody').innerHTML = (inv.invoices || []).map(i => `<tr><td>${i.invoice_id}</td><td>${new Date(i.date).toLocaleDateString()}</td><td>${escapeHtml(i.customer_name)}</td><td>${formatCurrency(i.total)}</td><td>${i.created_by || '-'}</td><td><button class="printHistoryBtn btn btn-outline text-xs" data-id="${i.invoice_id}">Print</button></td></tr>`).join(''); document.querySelectorAll('.printHistoryBtn').forEach(btn => btn.onclick = () => printInvoiceById(btn.dataset.id)); } catch(e) { toast(e.message,'error'); } }
-    async function loadCustomers() { try { const c = await apiCall("getCustomers"); document.getElementById('customersList').innerHTML = (c.customers || []).map(cu => `<div class="border-b py-2"><strong>${escapeHtml(cu.name)}</strong><br>${cu.phone}<br>${cu.total_purchases} invoices · ${formatCurrency(cu.total_spent)}</div>`).join(''); } catch(e) { toast(e.message,'error'); } }
-    async function loadMovements() { try { const m = await apiCall("getStockMovements"); document.getElementById('movementsTbody').innerHTML = (m.movements || []).map(mv => `<tr><td>${new Date(mv.timestamp).toLocaleString()}</td><td>${mv.product_id}</td><td>${mv.type}</td><td>${mv.qty}</td><td>${escapeHtml(mv.user||'')}</td><td>${escapeHtml(mv.reason||'')}</td></tr>`).join(''); } catch(e) { toast(e.message,'error'); } }
-    async function loadWorkers() { try { const w = await apiCall("getWorkers"); document.getElementById('workersTbody').innerHTML = (w.workers || []).map(wk => `<tr><td>${escapeHtml(wk)}</td><td>Worker</td><td>-</td><td>-</td><td>active</td><td><button class="deleteWorkerBtn" data-name="${escapeHtml(wk)}">Delete</button></td></tr>`).join(''); document.querySelectorAll('.deleteWorkerBtn').forEach(btn => btn.onclick = async () => { if(confirm('Delete worker?')) await apiCall("manageUser", { action:'deactivate', email:btn.dataset.name }); loadWorkers(); }); } catch(e) { console.error(e); } }
-    async function loadWorkersSelect() { try { const w = await apiCall("getWorkers"); const sel = document.getElementById('workerSelect'); sel.innerHTML = (w.workers || []).map(wk => `<option value="${escapeHtml(wk)}">${escapeHtml(wk)}</option>`).join(''); } catch(e) { console.error(e); } }
-    async function loadSettings() { try { const s = await apiCall("getSettings"); settings = s.settings || {}; document.getElementById('settingsForm').innerHTML = `<div><label>Store Name</label><input id="storeName" value="${escapeHtml(settings.shop_name||'')}"></div><div><label>Currency</label><input id="currency" value="${escapeHtml(settings.currency||'USD')}"></div><div><label>Tax Rate (%)</label><input id="taxRateSetting" value="${settings.tax_rate||0}"></div><div><label>Next Invoice #</label><input id="nextInvoiceNum" value="${settings.next_invoice_number||1001}"></div><div><label>Thank You Msg</label><textarea id="thankYouMsg">Thank you for your purchase!</textarea></div>`; } catch(e){ toast(e.message,'error'); } }
-    async function saveSettings() { const updates = { shop_name: document.getElementById('storeName').value, currency: document.getElementById('currency').value, tax_rate: parseFloat(document.getElementById('taxRateSetting').value), next_invoice_number: parseInt(document.getElementById('nextInvoiceNum').value) }; await apiCall("updateSettings", { settings: updates }); toast('Settings saved', 'success'); loadSettings(); }
-    async function testConnection() { try { const res = await apiCall("getUserInfo", { email: currentUser.email, password: currentPassword }); document.getElementById('connectionStatus').innerHTML = res.success ? '<span style="color:green">✅ Connected</span>' : '<span style="color:red">❌ Failed</span>'; } catch(e) { document.getElementById('connectionStatus').innerHTML = '<span style="color:red">❌ Error</span>'; } }
+    // Scanner functions
+    async function startInvoiceScanner() {
+        if(scanner) await stopInvoiceScanner();
+        const container = document.getElementById('scannerContainer');
+        container.style.display='block'; container.innerHTML='<div id="invoice-reader" style="width:100%"></div>';
+        document.getElementById('scannerControl').style.display='flex';
+        scanner = new Html5Qrcode('invoice-reader');
+        try {
+            await scanner.start({ facingMode:'environment' }, { fps:15, qrbox:{width:250,height:250} },
+                (decoded) => { const prod = products.find(p=>p.barcode===decoded); if(prod) addProductToInvoice(prod.barcode,prod.name,prod.selling_price); else toast('Not found','error'); },
+                () => {});
+        } catch(e){ toast('Camera error','error'); stopInvoiceScanner(); }
+    }
+    async function stopInvoiceScanner() { if(scanner) { try{ await scanner.stop(); await scanner.clear(); }catch(e){} scanner=null; } document.getElementById('scannerContainer').style.display='none'; document.getElementById('scannerControl').style.display='none'; }
 
-    // ========== MODAL (Add Product) ==========
-    function showAddProductModal() { document.getElementById('addProductModal').classList.add('active'); if(addProductScanner) stopAddProductScanner(); }
-    async function startAddProductScanner() { if(addProductScanner) await stopAddProductScanner(); const container = document.getElementById('barcodeScannerContainer'); container.style.display='block'; container.innerHTML='<div id="add-reader" style="width:100%"></div>'; addProductScanner = new Html5Qrcode('add-reader'); try { await addProductScanner.start({facingMode:'environment'},{fps:15,qrbox:{width:250,height:250}},(decoded)=>{ document.getElementById('newBarcode').value = decoded; stopAddProductScanner(); toast('Scanned'); },()=>{}); } catch(e){ toast('Camera error','error'); stopAddProductScanner(); } }
-    async function stopAddProductScanner() { if(addProductScanner) { try { await addProductScanner.stop(); await addProductScanner.clear(); } catch(e){} addProductScanner=null; } document.getElementById('barcodeScannerContainer').style.display='none'; document.getElementById('barcodeScannerContainer').innerHTML=''; }
-    async function saveNewProduct() { let barcode = document.getElementById('newBarcode').value.trim(); let name = document.getElementById('newProductName').value.trim(); let price = parseFloat(document.getElementById('newRetailPrice').value); if(!barcode || !name || isNaN(price)) { document.getElementById('addProductMsg').innerText='Barcode, Name, Price required'; return; } let prodData = { sku: barcode, name, barcode, image_url: '', brand: document.getElementById('newBrand').value, category: document.getElementById('newCategory').value, subcategory: document.getElementById('newSize').value, notes: document.getElementById('newDescription').value, selling_price: price, wholesale_price: parseFloat(document.getElementById('newWholesalePrice').value)||0, stock: parseInt(document.getElementById('newStock').value)||0, min_stock: parseInt(document.getElementById('newMinStock').value)||5, status:'active' }; try { await apiCall("addProduct", prodData); toast('Product added','success'); document.getElementById('addProductModal').classList.remove('active'); loadProducts(); loadDashboard(); } catch(e){ toast(e.message,'error'); } }
-    async function startInventoryScanner() { if(inventoryScanner) await stopInventoryScanner(); const modalDiv = document.createElement('div'); modalDiv.id='invScannerModal'; modalDiv.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:10001;display:flex;align-items:center;justify-content:center'; modalDiv.innerHTML='<div style="width:90%;max-width:400px;background:white;border-radius:1rem;overflow:hidden;"><div id="inv-reader" style="width:100%"></div><button id="closeInvScanner" style="margin:10px auto;display:block;background:#ef4444;color:white;border:none;padding:8px 16px;border-radius:2rem;">Close</button></div>'; document.body.appendChild(modalDiv); inventoryScanner = new Html5Qrcode('inv-reader'); try { await inventoryScanner.start({facingMode:'environment'},{fps:15,qrbox:{width:250,height:250}},(decoded)=>{ document.getElementById('searchProduct').value = decoded; loadProducts(); stopInventoryScanner(); modalDiv.remove(); toast('Scanned: '+decoded,'success'); },()=>{}); document.getElementById('closeInvScanner').onclick = () => { stopInventoryScanner(); modalDiv.remove(); }; } catch(e){ toast('Camera error','error'); stopInventoryScanner(); modalDiv.remove(); } }
-    async function stopInventoryScanner() { if(inventoryScanner) { try { await inventoryScanner.stop(); await inventoryScanner.clear(); } catch(e){} inventoryScanner=null; } }
+    // Other modules
+    async function loadHistory() { const inv = await apiCall("getInvoices"); document.getElementById('historyTbody').innerHTML = (inv.invoices||[]).map(i => `<tr><td>${i.invoice_id}侧<td>${new Date(i.date).toLocaleDateString()}侧<td>${i.customer_name}侧<td>${formatCurrency(i.total)}侧<td><button class="printHistoryBtn btn btn-outline text-xs" data-id="${i.invoice_id}">Print</button>侧</tr>`).join(''); document.querySelectorAll('.printHistoryBtn').forEach(btn => btn.onclick = () => printInvoiceById(btn.dataset.id)); }
+    async function loadCustomers() { const c = await apiCall("getCustomers"); document.getElementById('customersList').innerHTML = (c.customers||[]).map(cu => `<div class="border-b py-2"><strong>${cu.name}</strong><br>${cu.phone}<br>${cu.total_purchases} invoices · ${formatCurrency(cu.total_spent)}</div>`).join(''); }
+    async function loadMovements() { const m = await apiCall("getStockMovements"); document.getElementById('movementsTbody').innerHTML = (m.movements||[]).map(mv => `<tr><td>${new Date(mv.timestamp).toLocaleString()}侧<td>${mv.product_id}侧<td>${mv.type}侧<td>${mv.qty}侧<td>${mv.user||'-'}侧</tr>`).join(''); }
+    async function loadWorkers() { const w = await apiCall("getWorkers"); document.getElementById('workersList').innerHTML = (w.workers||[]).map(wk => `<div class="border-b py-2">${wk}</div>`).join(''); }
+    async function addWorker() { const name = document.getElementById('newWorkerName').value.trim(); if(!name) return; await apiCall("addWorker", { workerName: name }); toast('Worker added'); loadWorkers(); }
+    async function loadWorkersSelect() { const w = await apiCall("getWorkers"); const sel = document.getElementById('workerSelect'); sel.innerHTML = (w.workers||[]).map(wk => `<option>${wk}</option>`).join(''); }
+    async function loadSettings() { const s = await apiCall("getSettings"); settings = s.settings || {}; document.getElementById('settingsForm').innerHTML = `<div><label>Store Name</label><input id="storeName" value="${settings.shop_name||''}"></div><div><label>Currency</label><input id="currency" value="${settings.currency||'USD'}"></div><div><label>Tax (%)</label><input id="taxRateSetting" value="${settings.tax_rate||0}"></div><div><label>Next Invoice #</label><input id="nextInvoiceNum" value="${settings.next_invoice_number||1001}"></div>`; }
+    async function saveSettings() { const updates = { shop_name: document.getElementById('storeName').value, currency: document.getElementById('currency').value, tax_rate: parseFloat(document.getElementById('taxRateSetting').value), next_invoice_number: parseInt(document.getElementById('nextInvoiceNum').value) }; await apiCall("updateSettings", { settings: updates }); toast('Saved'); loadSettings(); }
 
-    // ========== EVENT LISTENERS ==========
+    // Modal
+    async function showAddProductModal() { document.getElementById('addProductModal').classList.add('active'); }
+    async function startAddProductScanner() { if(addProductScanner) await stopAddProductScanner(); const c = document.getElementById('barcodeScannerContainer'); c.style.display='block'; c.innerHTML='<div id="add-reader" style="width:100%"></div>'; addProductScanner = new Html5Qrcode('add-reader'); try { await addProductScanner.start({facingMode:'environment'},{fps:15,qrbox:{width:250,height:250}},(decoded)=>{ document.getElementById('newBarcode').value = decoded; stopAddProductScanner(); toast('Scanned'); },()=>{}); } catch(e){ toast('Camera error','error'); stopAddProductScanner(); } }
+    async function stopAddProductScanner() { if(addProductScanner) { try{ await addProductScanner.stop(); await addProductScanner.clear(); }catch(e){} addProductScanner=null; } document.getElementById('barcodeScannerContainer').style.display='none'; }
+    async function saveNewProduct() { let barcode = document.getElementById('newBarcode').value.trim(); let name = document.getElementById('newProductName').value.trim(); let price = parseFloat(document.getElementById('newRetailPrice').value); if(!barcode || !name || isNaN(price)) { toast('Fill all','error'); return; } let prodData = { sku: barcode, name, barcode, image_url: '', selling_price: price, stock: parseInt(document.getElementById('newStock').value)||0 }; await apiCall("addProduct", prodData); toast('Product added'); document.getElementById('addProductModal').classList.remove('active'); loadProducts(); loadDashboard(); }
+    async function startInventoryScanner() { if(inventoryScanner) await stopInventoryScanner(); const modalDiv = document.createElement('div'); modalDiv.id='invScannerModal'; modalDiv.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:10001;display:flex;align-items:center;justify-content:center'; modalDiv.innerHTML='<div style="width:90%;max-width:400px;background:white;border-radius:1rem;overflow:hidden;"><div id="inv-reader" style="width:100%"></div><button id="closeInvScanner" style="margin:10px auto;display:block;background:#ef4444;color:white;border:none;padding:8px 16px;border-radius:2rem;">Close</button></div>'; document.body.appendChild(modalDiv); inventoryScanner = new Html5Qrcode('inv-reader'); try { await inventoryScanner.start({facingMode:'environment'},{fps:15,qrbox:{width:250,height:250}},(decoded)=>{ document.getElementById('searchProduct').value = decoded; loadProducts(); stopInventoryScanner(); modalDiv.remove(); toast('Scanned'); },()=>{}); document.getElementById('closeInvScanner').onclick = () => { stopInventoryScanner(); modalDiv.remove(); }; } catch(e){ toast('Camera error','error'); stopInventoryScanner(); modalDiv.remove(); } }
+    async function stopInventoryScanner() { if(inventoryScanner) { try{ await inventoryScanner.stop(); await inventoryScanner.clear(); }catch(e){} inventoryScanner=null; } }
+
+    // Event bindings
     document.querySelectorAll('[data-tab]').forEach(btn => btn.onclick = () => {
         let tab = btn.dataset.tab;
         document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
         document.getElementById(tab+'Tab').classList.remove('hidden');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         btn.classList.add('active');
-        document.getElementById('pageTitle').innerHTML = `<i class="fas ${btn.querySelector('i').className.split(' ')[1]}"></i> ${btn.innerText.trim()}`;
         if(tab==='dashboard') loadDashboard();
         if(tab==='inventory') loadProducts();
         if(tab==='history') loadHistory();
@@ -437,9 +396,7 @@
     document.getElementById('addProductBtn').onclick = showAddProductModal;
     document.getElementById('scanInventoryBtn').onclick = startInventoryScanner;
     document.getElementById('saveSettingsBtn').onclick = saveSettings;
-    document.getElementById('testConnectionBtn').onclick = testConnection;
-    document.getElementById('refreshCustomersBtn').onclick = loadCustomers;
-    document.getElementById('searchProduct').addEventListener('input', loadProducts);
+    document.getElementById('addWorkerBtn').onclick = addWorker;
     document.getElementById('scanTrigger').onclick = startInvoiceScanner;
     document.getElementById('stopScannerBtn').onclick = stopInvoiceScanner;
     document.getElementById('saveInvoiceBtn').onclick = saveInvoice;
@@ -449,13 +406,10 @@
     document.getElementById('discountType').addEventListener('change', recalcTotals);
     document.getElementById('taxRate').addEventListener('input', recalcTotals);
     document.getElementById('received').addEventListener('input', recalcTotals);
-    document.getElementById('addWorkerBtn').onclick = async () => { let name = document.getElementById('newWorkerName').value.trim(); if(!name) return; await apiCall("manageUser", { action:'add', email:name, password:'worker123', role:document.getElementById('newWorkerRole').value, fullName:name }); toast('Worker added','success'); loadWorkers(); loadWorkersSelect(); };
     document.getElementById('scanBarcodeBtn').onclick = startAddProductScanner;
     document.getElementById('saveNewProduct').onclick = saveNewProduct;
     document.getElementById('cancelAddProduct').onclick = () => { stopAddProductScanner(); document.getElementById('addProductModal').classList.remove('active'); };
     window.addEventListener('beforeunload', () => stopInvoiceScanner());
-
-    // Initial load
     loadDashboard(); loadProducts(); loadHistory(); loadCustomers(); loadMovements(); loadWorkers(); loadWorkersSelect(); loadSettings(); loadInvoiceData();
 </script>
 </body>
